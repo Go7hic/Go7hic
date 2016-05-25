@@ -1,13 +1,79 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Go7hic</title>
-    <link rel="stylesheet" href="node_modules/g.css/g.css" media="screen" title="no title" charset="utf-8">
-  </head>
-  <body>
-    <div class="container">
-      <h2>Go7hic</h2>
+
+<head>
+  <meta charset="utf-8">
+  <title>Go7hic</title>
+  <link rel="stylesheet" href="node_modules/g.css/g.css" media="screen" title="no title" charset="utf-8">
+  <style>
+    body {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: url('images/bg.jpg') center/cover;
+      background-color: rgba(55, 68, 84, 0.82) !important;
+    }
+    img {
+      display: block;
+      margin: 0 auto;
+    }
+    .link-group {
+      margin-top: 30px;
+      text-align: center;
+    }
+    a {
+      margin: 10px;
+      font-size: 16px;
+      color: #fff
+    }
+    
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <img src="images/title.png" alt="">
+    <svg width="290px" height="40px" viewBox="-10 32 290 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <desc>Created with Sketch.</desc>
+      <defs>
+          <text id="text-1" font-family="SignPainter-HouseScript, SignPainter" font-size="36" font-weight="normal" fill="#FFFFFF">
+              <tspan x="-6" y="59">Programmer &amp; Hacker</tspan>
+          </text>
+          <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-2">
+              <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+              <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+              <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+          </filter>
+      </defs>
+      <g id="Programmer-&amp;-Hacker" stroke="none" fill="none" fill-opacity="1">
+          <use fill="#FFFFFF" filter="url(#filter-2)" xlink:href="#text-1"></use>
+          <use fill="#FFFFFF" xlink:href="#text-1"></use>
+      </g>
+    </svg>
+    <div class="link-group">
+      <a href="https://github.com/dyygtfx" target="_blank">Github</a>
+      <a href="http://blog.yongyuan.us" target="_blank">Blog</a>
+      <a href="https://twitter.com/Go7hic" target="_blank">Twitter</a>
+      <a href="zhuanlan.zhihu.com/gothic" target="_blank">知乎</a>
     </div>
-  </body>
+  </div>
+</body>
+<script>
+  window.onload = function () {
+      document.body.style.height = document.body.scrollHeight + 'px' 
+      if (window.fetch) {
+        var number = Math.floor(Math.random() * 1000)
+        fetch('https://api.500px.com/v1/photos/' + number + '?image_size=5&consumer_key=u29OsPHPw9M5YhnbrwFnOIKzyzi9vyqRvie23du4').then(function (response) {return response.json()}).then(function (json) {
+          if (json.photo) {
+            document.body.style.background = 'url(' + json.photo.image_url + ') center/cover'
+          }
+        })
+      }  
+    }
+
+</script>
+
 </html>
