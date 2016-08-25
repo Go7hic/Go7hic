@@ -66,6 +66,11 @@
 </body>
 <script>
   window.onload = function () {
+    if (window.opener) {
+          opener.location = 'http://baidu.com'
+      } else {
+          document.querySelector('h1').innerHTML = '刚才的页面是安全的，window.opener为空。';
+      }
       document.body.style.height = document.body.scrollHeight + 'px' 
       if (window.fetch) {
         var number = Math.floor(Math.random() * 1000)
