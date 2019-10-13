@@ -38,7 +38,7 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    {blog: true, label: 'blog'},
+    {blog: true, label: 'blog', target: '_blank'},
     {doc: 'technology/doc1', label: 'docs'},  
   ],
 
@@ -47,7 +47,7 @@ const siteConfig = {
   /* path to images for header/footer */
   headerIcon: 'img/tx.jpeg',
   // footerIcon: 'img/favicon.ico',
-  // favicon: 'img/favicon.ico',
+  favicon: 'img/tx.jpeg',
 
   /* Colors for website */
   colors: {
@@ -98,7 +98,7 @@ const siteConfig = {
 
   // Show documentation's last update time.
   // enableUpdateTime: true,
-
+  // blogSidebarCount: 'all'
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
   //   repoUrl: 'https://github.com/facebook/test-site',

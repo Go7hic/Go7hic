@@ -28,7 +28,7 @@
 .blockContent div p {
   text-align: left;
 }
-a {
+.paddingBottom a {
   color: #3b74ff;
 }
 .mainContainer {
@@ -48,4 +48,13 @@ a {
 }
 .homeSplashFade {
   display: none;
+}
+.nav-footer {
+  background: #fff;
+}
+.nav-footer .copyright {
+  color: #202020;
+}
+.postContainer {
+  padding: 40px 0;
 }

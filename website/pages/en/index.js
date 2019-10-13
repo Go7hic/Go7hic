@@ -101,8 +101,10 @@ class Index extends React.Component {
           <li><a target="_blank" href="">krul-cli</a>: a CLI tool for create fe project</li>
           <li><a target="_blank" href="https://github.com/R-Components">R-Components</a>: some react components</li>
           <li><a target="_blank" href="https://github.com/RN-Components">RN-Components</a>: some react-native components</li>
-          <li>More on my <a target="_blank" href="https://github.com/Go7hic">Github</a></li>
+         
         </ul>
+        <div>More on my <a target="_blank" href="https://github.com/Go7hic">Github</a></div>
+        <div>If you love my projects, please buy me a coffee to support me.</div>
         </div>
       </div>
     );
@@ -113,11 +115,10 @@ class Index extends React.Component {
       style={{textAlign: 'center'}}>
       <div class="wrapper">
         <h2>Contacts</h2>
-        <div>I am currently living in Xihu Hangzhou</div><div>You can reach me by</div>
+        <div>I am currently living in Hangzhou China</div><div>You can reach me by</div>
         <ul>
           <li>Email: gtfx0209#gmail.com</li>
           <li>Twitter: @Go7hic</li>
-          <li>Github: @Go7hic</li>
         </ul>
         </div>
       </div>
