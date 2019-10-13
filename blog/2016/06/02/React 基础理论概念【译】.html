@@ -1,0 +1,321 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>React 基础理论概念【译】 · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="这份文档我试图解释我心中的 react 模式，试图去推导我们这么设计的一些原则。可能有些地方会有争议而且例子的设计可能也有问题，不过这仅仅是个开始，如果你有更好的想法可以发 Pull Request"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="React 基础理论概念【译】 · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2016/06/02/React 基础理论概念【译】"/><meta property="og:description" content="这份文档我试图解释我心中的 react 模式，试图去推导我们这么设计的一些原则。可能有些地方会有争议而且例子的设计可能也有问题，不过这仅仅是个开始，如果你有更好的想法可以发 Pull Request"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">blog</a></li><li class=""><a href="/docs/technology/doc1" target="_self">docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2016/06/05/write-your-virtual-dom-2">动手写一个简单的 Virtual Dom（2）</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/06/04/write-your-virtual-dom-1">动手写一个简单的 Virtual Dom（1）</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/blog/2016/06/02/React 基础理论概念【译】">React 基础理论概念【译】</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/06/02/React 基础理论概念【译】">React 基础理论概念【译】</a></h1><p class="post-meta">June 2, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>这份文档我试图解释我心中的 react 模式，试图去推导我们这么设计的一些原则。可能有些地方会有争议而且例子的设计可能也有问题，不过这仅仅是个开始，如果你有更好的想法可以发 Pull Request</p>
+<!--truncate-->
+React 的实现充满实用的解决方案，渐进的步骤，算法优化，遗留代码，调试工具，你需要使它变得真正有用。
+<h2><a class="anchor" aria-hidden="true" id="transformation"></a><a href="#transformation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Transformation</h2>
+<p>React的核心前提即是改变了jQuery这种以DOM操作为核心到以数据流驱动为核心，View是不同的数据的投射。并且对于数据的处理函数应该是纯函数，即相同的输入有相同的输出而不会产生其他副作用：</p>
+<pre><code class="hljs">
+<span class="hljs-keyword">function</span> <span class="hljs-title">NameBox</span>(name) {
+  <span class="hljs-keyword">return</span> <span class="hljs-type">{</span> fontWeight: <span class="hljs-symbol">'bold</span>', labelContent: name };
+}
+
+<span class="hljs-symbol">'Sebastian</span> Markbåge' -&gt;
+{ fontWeight: <span class="hljs-symbol">'bold</span>', labelContent: <span class="hljs-symbol">'Sebastian</span> Markbåge' };
+
+</code></pre>
+<p>这样可以极大地方便对于View构造函数的重用与单元测试等。</p>
+<h2><a class="anchor" aria-hidden="true" id="abstraction抽象"></a><a href="#abstraction抽象" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Abstraction(抽象)</h2>
+<p>对于一个复杂的UI，肯定不能全都塞到一个函数里处理，这就是React另一个重要的思想，将UI抽象拆分为多个可重用的部分，并且各个部分要对上层隐藏实现细节，便如下面这样的进行函数调用：</p>
+<pre><code class="hljs">
+<span class="hljs-keyword">function</span> FancyUserBox(<span class="hljs-keyword">user</span>) {
+  <span class="hljs-keyword">return</span> {
+    borderStyle: <span class="hljs-string">'1px solid blue'</span>,
+    childContent: [
+      <span class="hljs-string">'Name: '</span>,
+      NameBox(<span class="hljs-keyword">user</span>.firstName + <span class="hljs-string">' '</span> + <span class="hljs-keyword">user</span>.lastName)
+    ]
+  };
+}
+
+</code></pre>
+<pre><code class="hljs">{ <span class="hljs-attribute">firstName</span>: <span class="hljs-string">'Sebastian'</span>, lastName: <span class="hljs-string">'Markbåge'</span> } <span class="hljs-selector-tag">-</span>&gt;
+{
+  <span class="hljs-attribute">borderStyle</span>: <span class="hljs-string">'1px solid blue'</span>,
+  childContent: [
+    <span class="hljs-string">'Name: '</span>,
+    { fontWeight: <span class="hljs-string">'bold'</span>, labelContent: <span class="hljs-string">'Sebastian Markbåge'</span> }
+  ]
+};
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="composition组合"></a><a href="#composition组合" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Composition(组合)</h2>
+<p>为了达到真正意义上的重用目标，并不仅仅就是把那个叶子组件组合进一个新的容器，我们也需要在容器中构建出能够组合其他抽象组件的抽象组件。这里我认为的组合要点在于如何把两个或者更多的抽象组件合并成一个新的：</p>
+<pre><code class="hljs">
+
+<span class="ada">
+<span class="hljs-keyword">function</span> <span class="hljs-title">FancyBox</span>(children) {
+  <span class="hljs-keyword">return</span> <span class="hljs-type">{</span>
+    borderStyle: '<span class="hljs-number">1</span>px solid blue',
+    children: children
+  };
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title">UserBox</span>(user) {
+  <span class="hljs-keyword">return</span> <span class="hljs-type">FancyBox([</span>
+    <span class="hljs-symbol">'Name</span>: ',
+    NameBox(user.firstName + <span class="hljs-string">' '</span> + user.lastName)
+  ]);
+}
+</span></code></pre>
+<h2><a class="anchor" aria-hidden="true" id="state"></a><a href="#state" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>State</h2>
+<p>一个UI并不仅仅是服务端或者业务逻辑的重现，实际上有很多特定的状态会被投射到UI上。譬如，如果你正在输入一个文本框，这个并不会复制到其他的Tab或者你的手机浏览器中。另外，滚动位置也是一个典型的你并不想投射到其他地方的状态。我们希望我们的数据模型会更加地固定，因此，我们从顶部组件开始将更新函数一级一级地注入到实际的显示的那个模块上。</p>
+<pre><code class="hljs">
+
+<span class="actionscript">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyNameBox</span><span class="hljs-params">(user, likes, onClick)</span> </span>{
+  <span class="hljs-keyword">return</span> FancyBox([
+    <span class="hljs-string">'Name: '</span>, NameBox(user.firstName + <span class="hljs-string">' '</span> + user.lastName),
+    <span class="hljs-string">'Likes: '</span>, LikeBox(likes),
+    LikeButton(onClick)
+  ]);
+}
+
+<span class="hljs-comment">// Implementation Details</span>
+
+<span class="hljs-keyword">var</span> likes = <span class="hljs-number">0</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addOneMoreLike</span><span class="hljs-params">()</span> </span>{
+  likes++;
+  rerender();
+}
+
+<span class="hljs-comment">// Init</span>
+
+FancyNameBox(
+  { firstName: <span class="hljs-string">'Sebastian'</span>, lastName: <span class="hljs-string">'Markbåge'</span> },
+  likes,
+  addOneMoreLike
+);
+</span></code></pre>
+<p>注意，这里的例子还是用了带副作用的函数来更新状态，不过我本意是想采用纯函数，即每次返回最新的状态来完成这个工作。我会在下面的例子里阐述这个观点。</p>
+<h2><a class="anchor" aria-hidden="true" id="memoization"></a><a href="#memoization" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Memoization</h2>
+<p>纯函数的一个好处就是其结果是可以缓存的，这就避免了重复调用带来的性能浪费。我们可以创建一个自带缓存的函数来记录最后调用的参数与返回值，这样我们可以自动地在相同参数的情况下直接返回：</p>
+<pre><code class="hljs">
+
+<span class="actionscript">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">memoize</span><span class="hljs-params">(fn)</span> </span>{
+  <span class="hljs-keyword">var</span> cachedArg;
+  <span class="hljs-keyword">var</span> cachedResult;
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arg)</span> </span>{
+    <span class="hljs-keyword">if</span> (cachedArg === arg) {
+      <span class="hljs-keyword">return</span> cachedResult;
+    }
+    cachedArg = arg;
+    cachedResult = fn(arg);
+    <span class="hljs-keyword">return</span> cachedResult;
+  };
+}
+
+<span class="hljs-keyword">var</span> MemoizedNameBox = memoize(NameBox);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NameAndAgeBox</span><span class="hljs-params">(user, currentTime)</span> </span>{
+  <span class="hljs-keyword">return</span> FancyBox([
+    <span class="hljs-string">'Name: '</span>,
+    MemoizedNameBox(user.firstName + <span class="hljs-string">' '</span> + user.lastName),
+    <span class="hljs-string">'Age in milliseconds: '</span>,
+    currentTime - user.dateOfBirth
+  ]);
+}
+</span></code></pre>
+<h2><a class="anchor" aria-hidden="true" id="lists"></a><a href="#lists" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Lists</h2>
+<p>大部分的UI组件都是会包含着列表，每一行会显示不同的值。我们需要维护一个Map来记录列表中每个项目的状态信息：</p>
+<pre><code class="hljs">
+
+<span class="javascript">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">UserList</span>(<span class="hljs-params">users, likesPerUser, updateUserLikes</span>) </span>{
+  <span class="hljs-keyword">return</span> users.map(<span class="hljs-function"><span class="hljs-params">user</span> =&gt;</span> FancyNameBox(
+    user,
+    likesPerUser.get(user.id),
+    () =&gt; updateUserLikes(user.id, likesPerUser.get(user.id) + <span class="hljs-number">1</span>)
+  ));
+}
+
+<span class="hljs-keyword">var</span> likesPerUser = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>();
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateUserLikes</span>(<span class="hljs-params">id, likeCount</span>) </span>{
+  likesPerUser.set(id, likeCount);
+  rerender();
+}
+
+UserList(data.users, likesPerUser, updateUserLikes);
+</span></code></pre>
+<p>注意，在这个函数里我们传入了多个值，这样就不能缓存结果了。</p>
+<h2><a class="anchor" aria-hidden="true" id="continuations"></a><a href="#continuations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Continuations</h2>
+<p>B狗的事情发生了，因为存在着很多的列表，我们也需要维护很多的模板，不同的列表显示的数据有交集有差异，譬如用户列表和你关注的用户列表，它们可能就是操作按钮上的不同。我们可以将部分模板和业务逻辑解耦合以下，譬如使用柯里化这种构造高阶函数的手段。这种手段本身并不能减少业务逻辑或者最终模板的复杂度，不过能够将一部分代码移出业务逻辑：</p>
+<pre><code class="hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyUserList</span><span class="hljs-params">(users)</span> </span>{
+
+  <span class="hljs-keyword">return</span> FancyBox(
+
+    UserList.bind(<span class="hljs-literal">null</span>, users)
+
+  );
+
+}
+
+
+
+<span class="hljs-keyword">const</span> box = FancyUserList(data.users);
+
+<span class="hljs-keyword">const</span> resolvedChildren = box.children(likesPerUser, updateUserLikes);
+
+<span class="hljs-keyword">const</span> resolvedBox = {
+
+  ...box,
+
+  children: resolvedChildren
+
+};
+
+
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="state-map"></a><a href="#state-map" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>State Map</h2>
+<p>早前我们就知道著名的23种设计模式里会避免重复的实现一些通用模式，我们也可以将一些状态管理的逻辑函数移到统一的初级函数里，这样就方便重复使用了：</p>
+<pre><code class="hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyBoxWithState</span>(<span class="hljs-params">
+  children,
+  stateMap,
+  updateState
+</span>) </span>{
+  <span class="hljs-keyword">return</span> FancyBox(
+    children.map(<span class="hljs-function"><span class="hljs-params">child</span> =&gt;</span> child.continuation(
+      stateMap.get(child.key),
+      updateState
+    ))
+  );
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">UserList</span>(<span class="hljs-params">users</span>) </span>{
+  <span class="hljs-keyword">return</span> users.map(<span class="hljs-function"><span class="hljs-params">user</span> =&gt;</span> {
+    <span class="hljs-attr">continuation</span>: FancyNameBox.bind(<span class="hljs-literal">null</span>, user),
+    <span class="hljs-attr">key</span>: user.id
+  });
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyUserList</span>(<span class="hljs-params">users</span>) </span>{
+  <span class="hljs-keyword">return</span> FancyBoxWithState.bind(<span class="hljs-literal">null</span>,
+    UserList(users)
+  );
+}
+
+<span class="hljs-keyword">const</span> continuation = FancyUserList(data.users);
+continuation(likesPerUser, updateUserLikes);
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="memoization-map"></a><a href="#memoization-map" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Memoization Map</h2>
+<p>上面提到过，当存在多个输入参数的情况下要再想进行缓存就会麻烦一点，我们要使用一些复杂的缓存策略来平衡内存使用与频次。幸运的是很多地方View还是比较固定的，整个树上的相同位置的值一般都是相同的，因此可以用树结构来进行缓存。</p>
+<pre><code class="hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">memoize</span><span class="hljs-params">(fn)</span></span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arg, memoizationCache)</span></span> {
+    <span class="hljs-keyword">if</span> (memoizationCache.<span class="hljs-built_in">arg</span> === <span class="hljs-built_in">arg</span>) {
+      <span class="hljs-keyword">return</span> memoizationCache.result;
+    }
+    const result = fn(<span class="hljs-built_in">arg</span>);
+    memoizationCache.<span class="hljs-built_in">arg</span> = <span class="hljs-built_in">arg</span>;
+    memoizationCache.result = result;
+    <span class="hljs-keyword">return</span> result;
+  };
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyBoxWithState</span><span class="hljs-params">(
+  children,
+  stateMap,
+  updateState,
+  memoizationCache
+)</span></span> {
+  <span class="hljs-keyword">return</span> FancyBox(
+    children.map(child =&gt; child.continuation(
+      stateMap.get(child.key),
+      updateState,
+      memoizationCache.get(child.key)
+    ))
+  );
+}
+
+const MemoizedFancyNameBox = memoize(FancyNameBox);
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="algebraic-effects"></a><a href="#algebraic-effects" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Algebraic Effects</h2>
+<p>如果我们在一个嵌套多层的UI体系里每次都把一些参数一级一级的传递下去，那约莫是非常麻烦的。因此我们需要创造一些捷径来在两个不直接相连的抽象组件之间传递数据，而不需要通过中间层。在React里面叫他Context。（官方文档里Context还是属于测试阶段）。有时候这个数据依赖的关系并不严格按照抽象树的逻辑，譬如在一个布局算法里你需要知道你的子元素的大小你才能够完整地决定他们的位置。我在这里使用 Algebraic Effects 作为 proposed for ECMAScript。</p>
+<pre><code class="hljs">
+
+<span class="qml"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ThemeBorderColorRequest</span>(<span class="hljs-params"></span>) </span>{ }
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyBox</span>(<span class="hljs-params">children</span>) </span>{
+  <span class="hljs-keyword">const</span> <span class="hljs-built_in">color</span> = raise <span class="hljs-keyword">new</span> ThemeBorderColorRequest();
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attribute">borderWidth</span>: <span class="hljs-string">'1px'</span>,
+    <span class="hljs-attribute">borderColor</span>: <span class="hljs-built_in">color</span>,
+    <span class="hljs-attribute">children</span>: children
+  };
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BlueTheme</span>(<span class="hljs-params">children</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-title">try</span> {
+    children();
+  } <span class="hljs-keyword">catch</span> effect ThemeBorderColorRequest -&gt; [, continuation] {
+    continuation(<span class="hljs-string">'blue'</span>);
+  }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params">data</span>) </span>{
+  <span class="hljs-keyword">return</span> BlueTheme(
+    FancyUserList.bind(<span class="hljs-literal">null</span>, data.users)
+  );
+}
+
+
+</span></code></pre>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#transformation">Transformation</a></li><li><a href="#abstraction抽象">Abstraction(抽象)</a></li><li><a href="#composition组合">Composition(组合)</a></li><li><a href="#state">State</a></li><li><a href="#memoization">Memoization</a></li><li><a href="#lists">Lists</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#state-map">State Map</a></li><li><a href="#memoization-map">Memoization Map</a></li><li><a href="#algebraic-effects">Algebraic Effects</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 Go7hic</section></footer></div></body></html>

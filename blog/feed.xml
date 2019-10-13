@@ -4,7 +4,7 @@
         <title>Go7hic Blog</title>
         <link>https://yongyuan.us/blog</link>
         <description>The best place to stay up-to-date with the latest Go7hic news and events.</description>
-        <lastBuildDate>Tue, 24 Oct 2017 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 05 Jun 2016 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -14,42 +14,28 @@
         </image>
         <copyright>Copyright © 2019 Go7hic</copyright>
         <item>
-            <title><![CDATA[New Version 1.0.0]]></title>
-            <link>https://yongyuan.us/blog/2017/10/24/new-version-1.0.0.html</link>
-            <guid>https://yongyuan.us/blog/2017/10/24/new-version-1.0.0.html</guid>
-            <pubDate>Tue, 24 Oct 2017 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>This blog post will test file name parsing issues when periods are present.</p> ]]></description>
-        </item>
-        <item>
-            <title><![CDATA[Adding RSS Support]]></title>
-            <link>https://yongyuan.us/blog/2017/09/26/adding-rss.html</link>
-            <guid>https://yongyuan.us/blog/2017/09/26/adding-rss.html</guid>
-            <pubDate>Tue, 26 Sep 2017 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>This is a test post.</p> <p>A whole bunch of other information.</p> ]]></description>
-        </item>
-        <item>
-            <title><![CDATA[Adding RSS Support - RSS Truncation Test]]></title>
-            <link>https://yongyuan.us/blog/2017/09/25/testing-rss.html</link>
-            <guid>https://yongyuan.us/blog/2017/09/25/testing-rss.html</guid>
-            <pubDate>Mon, 25 Sep 2017 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890</p>
-<p>This should be truncated.</p>
+            <title><![CDATA[动手写一个简单的 Virtual Dom（2）]]></title>
+            <link>https://yongyuan.us/blog/2016/06/05/write-your-virtual-dom-2.html</link>
+            <guid>https://yongyuan.us/blog/2016/06/05/write-your-virtual-dom-2.html</guid>
+            <pubDate>Sun, 05 Jun 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>上一篇文章其实就是介绍了怎么创建虚拟 DOM，真的只是创建 DOM 元素而已，因为没有设置属性的功能，事件绑定的功能也没有。
+现在慢慢的一个个来实现吧。</p>
 ]]></description>
         </item>
         <item>
-            <title><![CDATA[New Blog Post]]></title>
-            <link>https://yongyuan.us/blog/2017/04/10/blog-post-two.html</link>
-            <guid>https://yongyuan.us/blog/2017/04/10/blog-post-two.html</guid>
-            <pubDate>Mon, 10 Apr 2017 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.</p>
+            <title><![CDATA[动手写一个简单的 Virtual Dom（1）]]></title>
+            <link>https://yongyuan.us/blog/2016/06/04/write-your-virtual-dom-1.html</link>
+            <guid>https://yongyuan.us/blog/2016/06/04/write-your-virtual-dom-1.html</guid>
+            <pubDate>Sat, 04 Jun 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>Virtual Dom 又叫虚拟 DOM，随着 React 一起火起来的一个概念。虚拟 DOM 做到极致能够极大的提升性能，据说 Vue2 的 Virtual DOM 实现性能提升了很高。不过这些我们暂时不管，我们只要知道大致原理就可以自己来试着实现一个类似的乞丐版 Virtual Dom。</p>
 ]]></description>
         </item>
         <item>
-            <title><![CDATA[Blog Title]]></title>
-            <link>https://yongyuan.us/blog/2016/03/11/blog-post.html</link>
-            <guid>https://yongyuan.us/blog/2016/03/11/blog-post.html</guid>
-            <pubDate>Fri, 11 Mar 2016 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.</p>
+            <title><![CDATA[React 基础理论概念【译】]]></title>
+            <link>https://yongyuan.us/blog/2016/06/02/React 基础理论概念【译】.html</link>
+            <guid>https://yongyuan.us/blog/2016/06/02/React 基础理论概念【译】.html</guid>
+            <pubDate>Thu, 02 Jun 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>这份文档我试图解释我心中的 react 模式，试图去推导我们这么设计的一些原则。可能有些地方会有争议而且例子的设计可能也有问题，不过这仅仅是个开始，如果你有更好的想法可以发 Pull Request</p>
 ]]></description>
         </item>
     </channel>
