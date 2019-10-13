@@ -24,7 +24,7 @@ const siteConfig = {
   title: 'Go7hic', // Title for your website.
   tagline: "Welcome to Go7hic's homepage",
   url: 'https://yongyuan.us', // Your website URL
-  baseUrl: '/Go7hic/', // Base URL for your project */
+  baseUrl: '/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
