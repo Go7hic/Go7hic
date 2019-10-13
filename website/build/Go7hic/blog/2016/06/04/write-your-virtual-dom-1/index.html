@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>动手写一个简单的 Virtual Dom（1） · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Virtual Dom 又叫虚拟 DOM，随着 React 一起火起来的一个概念。虚拟 DOM 做到极致能够极大的提升性能，据说 Vue2 的 Virtual DOM 实现性能提升了很高。不过这些我们暂时不管，我们只要知道大致原理就可以自己来试着实现一个类似的乞丐版 Virtual Dom。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="动手写一个简单的 Virtual Dom（1） · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2016/06/04/write-your-virtual-dom-1"/><meta property="og:description" content="Virtual Dom 又叫虚拟 DOM，随着 React 一起火起来的一个概念。虚拟 DOM 做到极致能够极大的提升性能，据说 Vue2 的 Virtual DOM 实现性能提升了很高。不过这些我们暂时不管，我们只要知道大致原理就可以自己来试着实现一个类似的乞丐版 Virtual Dom。"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">blog</a></li><li class=""><a href="/docs/technology/doc1" target="_self">docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2016/06/05/write-your-virtual-dom-2">动手写一个简单的 Virtual Dom（2）</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/blog/2016/06/04/write-your-virtual-dom-1">动手写一个简单的 Virtual Dom（1）</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/06/02/React 基础理论概念【译】">React 基础理论概念【译】</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/06/04/write-your-virtual-dom-1">动手写一个简单的 Virtual Dom（1）</a></h1><p class="post-meta">June 4, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>Virtual Dom 又叫虚拟 DOM，随着 React 一起火起来的一个概念。虚拟 DOM 做到极致能够极大的提升性能，据说 Vue2 的 Virtual DOM 实现性能提升了很高。不过这些我们暂时不管，我们只要知道大致原理就可以自己来试着实现一个类似的乞丐版 Virtual Dom。</p>
+<!--truncate-->
+我们知道虚拟 DOM 最后也是要映射成真实DOM 的，所以我们可以用 JS 对象来表示真实的 DOM 树。比如：
+<p>比如有个这样的 DOM 树结构</p>
+<pre><code class="hljs css language-html"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">”list”</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item 1<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item 2<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</code></pre>
+<p>用 JS 对象我们可以这样来描述</p>
+<pre><code class="hljs css language-js">{ type: ‘ul’, 
+  props: { ‘class’: ‘list’ }, 
+  children: [
+    { type: ‘li’, props: {}, children: [‘item 1’] },
+    { type: ‘li’, props: {}, children: [‘item 2’] }
+  ] 
+}
+</code></pre>
+<p>考虑到我们不可能每个 DOM 标签都写一串这么长的对象来描述，我们可以封装一个简单的函数：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">h</span>(<span class="hljs-params">type, props, …children</span>) </span>{
+  <span class="hljs-keyword">return</span> { type, props, children };
+}
+</code></pre>
+<p>其中 type 表示元素标签，props 表示标签的属性，children 表示子元素，现在我们用上面的函数再表示一遍：</p>
+<pre><code class="hljs css language-js">h(‘ul’, { ‘class’: ‘list’ },
+  h(‘li’, {}, ‘item 1’),
+  h(‘li’, {}, ‘item 2’),
+)
+</code></pre>
+<p>现在我们还差一个方法来把上面的 JS 对象映射成真实的 DOM。我们可以写一个简单的实现方法：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createElement</span>(<span class="hljs-params">node</span>) </span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> node === <span class="hljs-string">'string'</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">document</span>.createTextNode(node)
+  }
+  <span class="hljs-keyword">const</span> $el = <span class="hljs-built_in">document</span>.createElement(node.type)
+  node.children.map(createElement).forEach($el.appendChild.bind($el))
+  <span class="hljs-keyword">return</span> $el
+}
+</code></pre>
+<p>到这里基本的创建真实 DOM 功能就实现了，但是如果这就完了不是有点坑爹啊。哈哈，的确，Virtual Dom 的精华之处应该在其 diff 和 patch 上面，所谓 diff 应该就是 计算 [ 新的虚拟DOM ] 和 [ 旧虚拟DOM ] 的差异，然后开始 patch（根据计算的 差异, 更新真实DOM）。我想要优化 Virtual Dom 实现应该也是在这两方面优化吧。</p>
+<p>所以接下来我们可以来实现个简单的 diff 功能。在写代码之前我们可以先想一下一个 Dom 结构前后之间会有哪几种变化呢？
+我列了几点：</p>
+<ul>
+<li>添加 DOM 元素 ，appendChild</li>
+<li>删除 Dom元素，removeChild</li>
+<li>替换 Dom 元素标签，标签和内容都变了，replaceChild</li>
+<li>元素标签变了，但是内容没变</li>
+</ul>
+<p>好了，我们就先看着这几个 diff 的实现吧，我们可以创建一个函数 updateElement ，用前面的那个 ul DOM结构为例子。</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateElement</span>(<span class="hljs-params">$parent, newNode, oldNode, index = <span class="hljs-number">0</span></span>) </span>{
+  <span class="hljs-keyword">if</span> (!oldNode) {
+    <span class="hljs-comment">// 直接插入新的标签</span>
+    $parent.appendChild(createElement(newNode));
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!newNode) {
+    <span class="hljs-comment">// 把原来的标签删除</span>
+    $parent.removeChild($parent.childNodes[index]);
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (changed(newNode, oldNode)) {
+    <span class="hljs-comment">// 替换 Dom 元素标签</span>
+    $parent.replaceChild(createElement(newNode), $parent.childNodes[index]);
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (newNode.type) {
+    <span class="hljs-keyword">const</span> newLength = newNode.children.length;
+    <span class="hljs-keyword">const</span> oldLength = oldNode.children.length;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; newLength || i &lt; oldLength; i++) {
+      updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i);
+    }
+  }
+}
+
+</code></pre>
+<p>再解释一下上面的代码，其中 $parent 是DOM的最外层标签，newNode和oldNode是新老的虚拟DOM，其中 index 表示的是子元素 li 的位置。</p>
+<p>到这就差不多了，毕竟是乞丐版。下面是一个完整的例子：</p>
+<p><a href="https://jsfiddle.net/gothic/ogc3mme4/3/">https://jsfiddle.net/gothic/ogc3mme4/3/</a></p>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 Go7hic</section></footer></div></body></html>
