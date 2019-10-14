@@ -58,3 +58,19 @@
 .postContainer {
   padding: 40px 0;
 }
+.wei-pay {
+  margin-bottom: 200px;
+}
+.wei-pay img {
+  width: 150px;
+  display: none;
+}
+.wei-pay span {
+  float: left;
+}
+.wei-pay a:hover {
+  display: none;
+}
+.wei-pay a:hover + img {
+  display: inline-block;
+}

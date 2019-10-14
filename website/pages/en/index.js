@@ -152,6 +152,21 @@ class Index extends React.Component {
         ]}
       </Block>
     );
+    
+    const Support = () => (
+      <Block background="">
+      {[
+        {
+          content:
+            `<p>Btc:1MhY3dpZTUuHyk8NLqMJytWW66n15UQbXp</p> <p class="wei-pay"><span>WeChat: </span> <a> WeChat Pay Qrcode</a> <img src=${baseUrl}img/support.jpeg /></p>`,
+
+          // image: `${baseUrl}img/undraw_note_list.svg`,
+          // imageAlign: 'left',
+          title: 'Support',
+        },
+      ]}
+    </Block>
+    )
 
     const LearnHow = () => (
       <Block background="light">
@@ -223,6 +238,7 @@ class Index extends React.Component {
         <About />
         <Project />  
         <Contacts />
+        <Support />
         </div>
       </div>
     );
