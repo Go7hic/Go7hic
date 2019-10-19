@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>使用 target=&quot;_blank&quot; 的一个漏洞 · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="这个问题前几个月在 HN 上有人讨论过，但是今天遇到了就再记录一下，毕竟国外有人说过这是一个最为低估的一个漏洞。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="使用 target=&quot;_blank&quot; 的一个漏洞 · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2016/08/16/target-blank"/><meta property="og:description" content="这个问题前几个月在 HN 上有人讨论过，但是今天遇到了就再记录一下，毕竟国外有人说过这是一个最为低估的一个漏洞。"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">blog</a></li><li class=""><a href="/docs/technology/doc1" target="_self">docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2018/03/10/web-sec-check-list">Web Developer Security Checklist【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2017/10/08/js-compiler">用 JavaScript 写一个简单的编译器【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2017/04/10/react-fiber">React Fiber 架构【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/09/17/ios-dev-3">写给前端的 iOS 开发教程(3)：iOS 与 ReactNative 混合开发</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/09/17/ios-dev-2">写给前端的 iOS 开发教程(2)：熟悉 CocoaPods</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/08/16/target-blank">使用 target=&quot;_blank&quot; 的一个漏洞</a></h1><p class="post-meta">August 16, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>这个问题前几个月在 HN 上有人讨论过，但是今天遇到了就再记录一下，毕竟国外有人说过这是一个最为低估的一个漏洞。</p>
+<p>平常我们通过 a 标签新打开页面的时候会给 a 标签添加 target=&quot;_blank&quot; 属性，表示新开一个窗口打开。但是在新页面的 window 对象中，存在一个 opener 属性，保存对父页面的引用，而且这个在不同域之间也是存在的。</p>
+<p>就意味着在父页面新窗口打开一个链接，跳到子页面后，子页面可以控制父页面的一些行为，比如让父页面重定向到一个逼真的钓鱼页面，因为此时用户的注意力在新开的窗口，很难注意到父页面发生的变化。</p>
+<p>在很长的一段时间，浏览器厂商对这个 bug 并不 care( <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=168988">
+Security: if window.opener exists, a page can trigger a navigation in the opener regardless of security origin -
+Monorail</a> )。按照他们的意思就是你不要在新窗口打开页面，直到前几个月才对这个bug 有了一个比较好的解决方案，那就是给 a 标签添加 <code>rel=noopener</code> 属性，可以在 <a href="https://html.spec.whatwg.org/#link-type-noopener">HTML Standard</a>看到这个属性说明，在 ff 浏览器里面要再加上 <code>rel=&quot;noreferrer&quot;</code>才能生效。所以如果你要通过 a 标签新打开个页面，你的正确写法应该是：
+<code>&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;&lt;/a&gt;</code></p>
+<p>在一些老浏览器里面不支持这个属性，就可以通过js 手动设置  opener 为 null 来解决：</p>
+<pre><code class="hljs css language-js">var newWnd = window.open('http://baidu.com);
+newWnd.opener = null;
+newWnd.location = url;
+</code></pre>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 Go7hic</section></footer></div></body></html>
