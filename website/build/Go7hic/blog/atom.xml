@@ -2,18 +2,112 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://yongyuan.us/blog</id>
     <title>Go7hic Blog</title>
-    <updated>2016-06-05T06:00:00Z</updated>
+    <updated>2018-03-10T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://yongyuan.us/blog"/>
     <subtitle>The best place to stay up-to-date with the latest Go7hic news and events.</subtitle>
     <logo>https://yongyuan.us/img/tx.jpeg</logo>
     <rights>Copyright © 2019 Go7hic</rights>
     <entry>
-        <title type="html"><![CDATA[动手写一个简单的 Virtual Dom（2）]]></title>
-        <id>https://yongyuan.us/blog/2016/06/05/write-your-virtual-dom-2.html</id>
-        <link href="https://yongyuan.us/blog/2016/06/05/write-your-virtual-dom-2.html">
+        <title type="html"><![CDATA[Web Developer Security Checklist【译】]]></title>
+        <id>https://yongyuan.us/blog/2018/03/10/web-sec-check-list.html</id>
+        <link href="https://yongyuan.us/blog/2018/03/10/web-sec-check-list.html">
         </link>
-        <updated>2016-06-05T06:00:00Z</updated>
+        <updated>2018-03-10T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<h3><a class="anchor" aria-hidden="true" id="数据库"></a><a href="#数据库" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>数据库</h3> <ul> <li>对识别用户身份的数据和诸如访问令牌、电子邮箱地址或账单明细等敏感数据进行加密。</li> <li>如果数据库支持在空闲状态进行低消耗的数据加密 (如 <a href="https://aws.amazon.com/about-aws/whats-new/2015/12/amazon-aurora-now-supports-encryption-at-rest/">AWS Aurora</a>)，那么请激活此功能以加强磁盘数据安全。确保所有的备份文件也都被加密存储。</li> <li>对访问数据库的用户帐号使用最小权限原则，禁止使用数据库 root 帐号。</li> <li>使用精心设计的密钥库存储和分发密钥，不要对应用中使用的密钥进行硬编码。</li> <li>仅使用 SQL 预备语句以彻底阻止 SQL 注入。例如，如果使用 NPM 开发应用，连接数据库时不使用 npm-my...</li></ul>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[用 JavaScript 写一个简单的编译器【译】]]></title>
+        <id>https://yongyuan.us/blog/2017/10/08/js-compiler.html</id>
+        <link href="https://yongyuan.us/blog/2017/10/08/js-compiler.html">
+        </link>
+        <updated>2017-10-08T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>注：本文来自 <a href="https://github.com/thejameskyle/the-super-tiny-compiler">https://github.com/thejameskyle/the-super-tiny-compiler</a></p> <blockquote> <p>这是一个超级简单的编译器的例子，包含了现代编译器的几个主要部分，用简单易读的 JavaScript 编写。</p> </blockquote> <p>把这个读完将会有助于你了解大多数编译器从前端到后端是如何工作的。</p> <p>今天让我们来写一个编译器，一个超级无敌小的编译器！它小到如果把所有注释删去的话，大概只剩 200行左右的代码。 我们将会用它将 lisp 风格的函数调用转换为 C 风格。 如果你对这两种风格不是很...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[React Fiber 架构【译】]]></title>
+        <id>https://yongyuan.us/blog/2017/04/10/react-fiber.html</id>
+        <link href="https://yongyuan.us/blog/2017/04/10/react-fiber.html">
+        </link>
+        <updated>2017-04-10T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>React v16 即将发布了，这个版本带来最大的变化就是核心 diff 算法的重写，在新版发布之前，我们一起来了解一下这个被叫做 fiber 的算法到底是啥。</p> <p>原文地址：<a href="https://github.com/acdlite/react-fiber-architecture">https://github.com/acdlite/react-fiber-architecture</a></p> <h2><a class="anchor" aria-hidden="true" id="介绍"></a><a href="#介绍" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>介绍</h2> <p>React Fiber是一个正在重写的 React 核心算法。它是React团队过去两年研究的结晶。</p> <p>React Fiber 的目标是增强对于某些领域的适应性，比如动画、布局和手势等。它的重要特性是增量渲染：将渲染事务...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[写给前端的 iOS 开发教程(3)：iOS 与 ReactNative 混合开发]]></title>
+        <id>https://yongyuan.us/blog/2016/09/17/ios-dev-3.html</id>
+        <link href="https://yongyuan.us/blog/2016/09/17/ios-dev-3.html">
+        </link>
+        <updated>2016-09-17T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>ReactNative 是啥我就不具体介绍了，作为前端你没用过也该听说过。从上半年开始一直断断续续写 RN，遇到 RN 和原生混合开发场景，当然 RN 理论上来说也可以理解为原生应用，只不过中间多了一层 JS 的编译，但是我这里的原生指的是 Objective-C 的原生 iOS 开发。</p> <p>作为前端来讲从 RN 来学习 iOS 开发我觉得再合适不过了，下面就是一个 RN 结合原生的开发例子。</p> <p>假设你已经有了一个原生应用，然后通过 <code>react-native init</code> 开始一个新的 RN 项目工程，把...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[写给前端的 iOS 开发教程(2)：熟悉 CocoaPods]]></title>
+        <id>https://yongyuan.us/blog/2016/09/17/ios-dev-2.html</id>
+        <link href="https://yongyuan.us/blog/2016/09/17/ios-dev-2.html">
+        </link>
+        <updated>2016-09-17T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>CocoaPods 我的理解就是和 Node 的 npm 作用差不多，用来管理一些配置依赖文件，不过它是从 Ruby 的 RubyGems,Bundler 受启发来的。如果你要用 OC 开发，肯定要学会使用 pod 的，就像你用 Node，肯定要用 npm 一样的。</p> <p>网上也有很多 pod 的使用教程，这里也把之前的笔记简单记录一下</p> <h2><a class="anchor" aria-hidden="true" id="使用cocoapods"></a><a href="#使用cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>使用CocoaPods</h2> <p>制作和使用CocoaPods库都十分简单，往往几分钟就能配置完毕。</p> <p>想获取最新的官方教程，<a href="http://guides.cocoapods.org/">请前往此处</a>。</p> <h4><a class="anchor" aria-hidden="true" id="安装cocoapods"></a><a href="#安装cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>安装CocoaPods</h4> <p>CocoaPo...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[写给前端的 iOS 开发教程(1)：Objective-C 入门]]></title>
+        <id>https://yongyuan.us/blog/2016/09/17/ios-dev-1.html</id>
+        <link href="https://yongyuan.us/blog/2016/09/17/ios-dev-1.html">
+        </link>
+        <updated>2016-09-17T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>之前的一个入门学习笔记，高手略过</p> <p>PS：后面打算把之前记录在印象笔记里面的比较慢慢整理到博客上面</p> <h2><a class="anchor" aria-hidden="true" id="不仅是学习一门新语言"></a><a href="#不仅是学习一门新语言" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>不仅是学习一门新语言</h2> <p>有过脚本开发经验的人（如Javascript，PHP，Shell）在刚开始学习iOS开发的时候，会觉得iOS开发的学习曲线比脚本语言要高，是的，这种感觉是对的。因为学iOS开发，不仅是学习一门新语言，它包括：</p> <ul> <li>一门语言：Objective-C</li> <li>一个框架：Cocoa Touch</li> <li>一个IDE：Xcode</li> </ul> <p>初学脚本语言通常不会来绘制图形界面、与人交互，iOS如果不做图形界面，像脚...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[使用 target="_blank" 的一个漏洞]]></title>
+        <id>https://yongyuan.us/blog/2016/08/16/target-blank.html</id>
+        <link href="https://yongyuan.us/blog/2016/08/16/target-blank.html">
+        </link>
+        <updated>2016-08-16T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>这个问题前几个月在 HN 上有人讨论过，但是今天遇到了就再记录一下，毕竟国外有人说过这是一个最为低估的一个漏洞。</p> <p>平常我们通过 a 标签新打开页面的时候会给 a 标签添加 target=&quot;_blank&quot; 属性，表示新开一个窗口打开。但是在新页面的 window 对象中，存在一个 opener 属性，保存对父页面的引用，而且这个在不同域之间也是存在的。</p> <p>就意味着在父页面新窗口打开一个链接，跳到子页面后，子页面可以控制父页面的一些行为，比如让父页面重定向到一个逼真的钓鱼页面，因为...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[动手写一个简单的 Virtual Dom（3）]]></title>
+        <id>https://yongyuan.us/blog/2016/06/06/Virtual-Dom3.html</id>
+        <link href="https://yongyuan.us/blog/2016/06/06/Virtual-Dom3.html">
+        </link>
+        <updated>2016-06-06T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>前一篇文章介绍了 Virtual Dom 的属性设置等，现在再讲一下 Virtual Dom 怎么绑定事件。 平常我们给 DOM 绑定事件的写法可能是这样：<code>querySelector('xx').addEventListener(..)</code> 但是在 React 里面我们不这样写，我们直接在 DOM 上通过属性来绑定：</p> <pre><code class="hljs"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> alert(‘hi!’)}&gt;<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span> </code></pre> <p>上面我们有一个专门监听事件的属性，并且都以 'on' 开头...</p>]]></summary>
+        <author>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[动手写一个简单的 Virtual Dom（2）]]></title>
+        <id>https://yongyuan.us/blog/2016/06/06/Virtual-Dom2.html</id>
+        <link href="https://yongyuan.us/blog/2016/06/06/Virtual-Dom2.html">
+        </link>
+        <updated>2016-06-06T06:00:00Z</updated>
         <summary type="html"><![CDATA[<p>上一篇文章其实就是介绍了怎么创建虚拟 DOM，真的只是创建 DOM 元素而已，因为没有设置属性的功能，事件绑定的功能也没有。
 现在慢慢的一个个来实现吧。</p>
 ]]></summary>
@@ -24,10 +118,10 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[动手写一个简单的 Virtual Dom（1）]]></title>
-        <id>https://yongyuan.us/blog/2016/06/04/write-your-virtual-dom-1.html</id>
-        <link href="https://yongyuan.us/blog/2016/06/04/write-your-virtual-dom-1.html">
+        <id>https://yongyuan.us/blog/2016/06/06/Virtual-Dom1.html</id>
+        <link href="https://yongyuan.us/blog/2016/06/06/Virtual-Dom1.html">
         </link>
-        <updated>2016-06-04T06:00:00Z</updated>
+        <updated>2016-06-06T06:00:00Z</updated>
         <summary type="html"><![CDATA[<p>Virtual Dom 又叫虚拟 DOM，随着 React 一起火起来的一个概念。虚拟 DOM 做到极致能够极大的提升性能，据说 Vue2 的 Virtual DOM 实现性能提升了很高。不过这些我们暂时不管，我们只要知道大致原理就可以自己来试着实现一个类似的乞丐版 Virtual Dom。</p>
 ]]></summary>
         <author>
@@ -37,11 +131,30 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[React 基础理论概念【译】]]></title>
-        <id>https://yongyuan.us/blog/2016/06/02/React 基础理论概念【译】.html</id>
-        <link href="https://yongyuan.us/blog/2016/06/02/React 基础理论概念【译】.html">
+        <id>https://yongyuan.us/blog/2016/06/02/React-basic.html</id>
+        <link href="https://yongyuan.us/blog/2016/06/02/React-basic.html">
         </link>
         <updated>2016-06-02T06:00:00Z</updated>
         <summary type="html"><![CDATA[<p>这份文档我试图解释我心中的 react 模式，试图去推导我们这么设计的一些原则。可能有些地方会有争议而且例子的设计可能也有问题，不过这仅仅是个开始，如果你有更好的想法可以发 Pull Request</p>
+]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Node 的艺术]]></title>
+        <id>https://yongyuan.us/blog/2016/02/03/art-of-node.html</id>
+        <link href="https://yongyuan.us/blog/2016/02/03/art-of-node.html">
+        </link>
+        <updated>2016-02-03T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<blockquote>
+<p>原文： <a href="https://github.com/maxogden/art-of-node">https://github.com/maxogden/art-of-node</a></p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" id="目录"></a><a href="#目录" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>目录</h2>
+<ul>
+<li><a href="#了解Node">了解Node</a></li>
+</ul>
 ]]></summary>
         <author>
             <name>Go7hic</name>

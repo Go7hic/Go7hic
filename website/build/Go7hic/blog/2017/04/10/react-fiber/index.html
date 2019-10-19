@@ -1,0 +1,217 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>React Fiber 架构【译】 · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="React v16 即将发布了，这个版本带来最大的变化就是核心 diff 算法的重写，在新版发布之前，我们一起来了解一下这个被叫做 fiber 的算法到底是啥。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="React Fiber 架构【译】 · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2017/04/10/react-fiber"/><meta property="og:description" content="React v16 即将发布了，这个版本带来最大的变化就是核心 diff 算法的重写，在新版发布之前，我们一起来了解一下这个被叫做 fiber 的算法到底是啥。"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">blog</a></li><li class=""><a href="/docs/technology/doc1" target="_self">docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2018/03/10/web-sec-check-list">Web Developer Security Checklist【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2017/10/08/js-compiler">用 JavaScript 写一个简单的编译器【译】</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/blog/2017/04/10/react-fiber">React Fiber 架构【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/09/17/ios-dev-3">写给前端的 iOS 开发教程(3)：iOS 与 ReactNative 混合开发</a></li><li class="navListItem"><a class="navItem" href="/blog/2016/09/17/ios-dev-2">写给前端的 iOS 开发教程(2)：熟悉 CocoaPods</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2017/04/10/react-fiber">React Fiber 架构【译】</a></h1><p class="post-meta">April 10, 2017</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>React v16 即将发布了，这个版本带来最大的变化就是核心 diff 算法的重写，在新版发布之前，我们一起来了解一下这个被叫做 fiber 的算法到底是啥。</p>
+<p>原文地址：<a href="https://github.com/acdlite/react-fiber-architecture">https://github.com/acdlite/react-fiber-architecture</a></p>
+<h2><a class="anchor" aria-hidden="true" id="介绍"></a><a href="#介绍" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>介绍</h2>
+<p>React Fiber是一个正在重写的 React 核心算法。它是React团队过去两年研究的结晶。</p>
+<p>React Fiber 的目标是增强对于某些领域的适应性，比如动画、布局和手势等。它的重要特性是增量渲染：将渲染事务分块并分布到多个帧去完成的能力。</p>
+<p>其他关键特性包括有新的更新时，暂停、终止或重用事务的功能；为不同类型的更新设置优先级的功能；还有新的并发原语。</p>
+<h2><a class="anchor" aria-hidden="true" id="关于本文档"></a><a href="#关于本文档" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>关于本文档</h2>
+<p>Fiber 引入了几个新颖的概念，单单看代码是很难理解的。本文档起初是 React 项目在逐步实现 Fiber 的时候记的笔记集，随着慢慢扩充，我发现这对于其他人来说可能也是很实用的资源。</p>
+<p>我会尽可能的使用简单的语言，通过显示的定义一些术语来避免行话。如果可能，我也会尽可能链接到外部资源。</p>
+<p>注意我并不在React团队里面，不代表任何官方的发言。这不是官方文档。不过我请教了React团队的一些成员来检查文档的准确性。</p>
+<p>这也是一项进行中的工作。Fiber也是一个开发中的项目，在完成之前有可能还会有重大的重构。所以我在此为它的设计写的文档也是进行中的。非常欢迎提出优化和建议。</p>
+<p>我的目标是读完这篇文档后，你能够理解Fiber足够深来读懂它的实现，最终甚至能够返回来给React做一些贡献。</p>
+<h2><a class="anchor" aria-hidden="true" id="需要的知识"></a><a href="#需要的知识" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>需要的知识</h2>
+<p>我强烈建议在继续看本文档之前，你先熟悉一下以下资源：</p>
+<ul>
+<li><a href="https://facebook.github.io/react/blog/2015/12/18/react-components-elements-and-instances.html">React组件，元素和实例</a> -”组件“是经常提起的术语。对这些术语有坚实的认知是非常重要的。</li>
+<li><a href="https://facebook.github.io/react/docs/reconciliation.html">协调算法</a> - React协调算法的高阶阐述。</li>
+<li><a href="https://github.com/reactjs/react-basic">React基本理论概念</a> - 不带实现细节的React理论模型阐述。其中一些内容可能在第一次阅读时没什么意义，但随着时间推移会证明非常有用。</li>
+<li><a href="https://facebook.github.io/react/contributing/design-principles.html">React设计原则</a> - 特别注意其中的Scheduling环节，它很好的诠释了React Fiber诞生的原因。</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="回顾"></a><a href="#回顾" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>回顾</h2>
+<p>如果你还没阅读“必要的知识”环节，请确认阅读一下。
+在我们学习新的东西前，我们回顾一些概念。</p>
+<h3><a class="anchor" aria-hidden="true" id="什么是协调算法-what-is-reconciliation"></a><a href="#什么是协调算法-what-is-reconciliation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>什么是协调算法 （What is reconciliation）</h3>
+<h4><a class="anchor" aria-hidden="true" id="协调算法reconciliation"></a><a href="#协调算法reconciliation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>协调算法(reconciliation)</h4>
+<blockquote>
+<p>React用以比较两棵树的算法，其决定哪些部分需要更改。</p>
+</blockquote>
+<h4><a class="anchor" aria-hidden="true" id="更新update"></a><a href="#更新update" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>更新(update)</h4>
+<blockquote>
+<p>即渲染React app的数据发生的一个改变。通常是setState的结果。最终会导致重新渲染。</p>
+</blockquote>
+<p>React API的核心思想是让更新能引发整个app及时的重新渲染。这将允许开发者作出声明式的推断，而不用担心app从一个状态切换到另一个状态时过渡的效率（A到B，B到C，C到A等等）。</p>
+<p>实际上，对于每一次改变都重新渲染app只对一些小型应用有用；现实中，这是极度浪费性能的。React使用了一些优化，使得保持高性能的同时能够达到类似重新渲染整个app的效果。这些优化就是协调算法的一部分。</p>
+<p>协调算法是基于通常被称为“虚拟DOM”技术的。一个高阶的描述是：当你渲染一个React app的时候，会生成app描述的节点树并保存在内存中。然后这个树被输出到渲染环境——比如，在浏览器应用中，它被翻译为一堆DOM操作。当一个app更新时（一般是通过setState），就产生了一棵新树。新树和旧树会进行比较，计算需要哪些操作来更新app。</p>
+<p>虽然Fiber是协调算法的推倒重写，关于React文档)中的高阶知识还是一致的。主要的两点是：</p>
+<ul>
+<li>不同类型的组件很大程度上将会产生不同的树。React将不会比较他们，而是直接用新的完全替代旧的。</li>
+<li>列表的diff使用key。Key应当是稳定、可预测、并且唯一的。</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="协调算法-vs-渲染"></a><a href="#协调算法-vs-渲染" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>协调算法 vs 渲染</h3>
+<p>DOM 只是 React 可以输出的渲染环境之一，其他的一些主要目标包括通过React Native输出到原生的iOS和Android视图。（这也就是为什么“虚拟DOM”是有点用词不当的）</p>
+<p>React支持这么多目标的原因是因为它将协调算法和渲染设计成了不同的阶段。协调算法负责计算一棵树哪些部分更改了；渲染器则利用该信息来实际更新app。</p>
+<p>这个分离意味着 React DOM 和 React Native 能共享 React 核心提供的协调算法，而使用它们各自的渲染器。</p>
+<p>Fiber重构了协调器。Fiber 不是渲染需要首要考虑的，但渲染器需要改变来支持（并且利用）新的架构。</p>
+<h3><a class="anchor" aria-hidden="true" id="调度scheduling"></a><a href="#调度scheduling" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>调度(Scheduling)</h3>
+<h4><a class="anchor" aria-hidden="true" id="调度scheduling-1"></a><a href="#调度scheduling-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>调度(scheduling)</h4>
+<p>决定事务什么时候执行的过程。</p>
+<h4><a class="anchor" aria-hidden="true" id="事务work"></a><a href="#事务work" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>事务(work)</h4>
+<p>必须执行的计算。事务一般是由update引起的（比如setState）。
+React的设计原则文档在这方面写的很好，我引用如下：</p>
+<blockquote>
+<p>在当前的实现中，React递归遍历节点树，在一个tick内调用整棵新树的渲染函数。但是未来有可能推迟一些更新来避免掉帧。</p>
+</blockquote>
+<p>这是React设计的一个常见主题。一些流行的库采用&quot;push&quot;方法，在新的数据就绪的时候就执行计算。React仍然使用&quot;pull&quot;方法，计算可以推迟到需要的时候才执行。
+React不是通用的数据处理库。它是用以建立用户界面的库。我们认为在一个app中，知道计算是相关还是不相关的是独一无二的重要。</p>
+<p>如果某些东西超出了屏幕显示，我们可以延迟它相关的所有逻辑。如果数据到达的比帧率要快，我们可以合并和批处理更新。我们可以优先处理用户交互的事务（比如点击按钮引起的动画），次要处理没那么重要的背景事务（比如渲染刚从网络上返回的数据）来避免掉帧。</p>
+<p>关键点在于：</p>
+<ul>
+<li>在用户界面中，没必要每一个更新都立即执行；实际上这样做是很浪费的，导致掉帧，降低用户体验。</li>
+<li>不同类型的更新具有不同的优先级——一个动画更新需要比数据源的更新更快的完成。</li>
+<li>一个基于push的app需要应用（你，程序员）来决定怎么调度事务。基于pull的app允许框架(React)变得智能化，帮你完成这些决策。</li>
+</ul>
+<p>React现在没有很重要地利用调度；一个更新会引发整个子树被立即重新渲染。革新React的核心算法来充分利用调度是Fiber背后的驱动想法。</p>
+<p>现在我们已经准备好了深入Fiber的实现。下一节比我们前面讨论的都要更偏技术一点。继续之前，确认你学习好了前面的知识点。</p>
+<h2><a class="anchor" aria-hidden="true" id="什么是fiber"></a><a href="#什么是fiber" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>什么是Fiber？</h2>
+<p>我们将要讨论React Fiber架构的核心部分。Fibers是比应用开发者通常思考的部分要低很多的底层抽象。如果你发现很难理解它，不要丧气。多尝试几次，最终你就能理解。（如果你最后懂了，请提些建议来改进这节内容）</p>
+<p>出发吧！</p>
+<p>我们前面已经确定了Fiber的主要目标是使React能够充分利用调度。详细来说，我们需要能够：</p>
+<ul>
+<li>暂停事务，在一段时间后再接着执行。</li>
+<li>分配不同类型事务的优先级。</li>
+<li>复用之前已完成的事务。</li>
+<li>当事务不再需要时，终止该事务。</li>
+</ul>
+<p>为了实现上面的任意一个功能，首先我们需要分解事务为若干单元的方法。在某种意义上那就是一个fiber。一个fiber- 代表了事务的一个单元。
+更进一步之前，我们重温一下React组件是数据的函数的概念，通常表达为：</p>
+<pre><code class="hljs"><span class="hljs-attr">v</span> = f(d)
+</code></pre>
+<p>它表明渲染一个React app类似于调用一个函数，这个函数体里面包含了对其他函数的调用，以此类推。这个类比在思考fiber的时候很有帮助。</p>
+<p>计算机跟踪一个程序执行的方式是调用栈。当一个函数执行的时候，栈上面就会添加一个新的堆栈结构。这个堆栈结构代表了那个函数执行的事务。</p>
+<p>处理用户界面时，问题是如果太多的事务同时执行，它可能导致动画掉帧，看起来卡顿。还有，其中的一些事务是不需要的，因为它可能被最近的更新取代了。这就是UI组件和函数的比较分解的地方，因为通常组件比函数有更详细的关注点。</p>
+<p>最新的浏览器（和React Native）实现了API来定位这个问题：requestIdleCallback调度一个低优先级的函数在空闲阶段执行，requestAnimationFrame调度一个高优先级的函数在下一个动画帧执行。问题在于，要使用这些API，你需要将渲染事务分解为增量单元的方法。如果你仅依赖于调用栈，它将会一直工作直到栈变空。</p>
+<p>如果我们能自定义调用栈的行为来优化UI渲染该多好啊？如果我们能主动中断调用栈，手动操作堆栈结构该多好啊？
+那就是React Fiber的目的。Fiber是专门为React组件实现的堆栈重构。你可以把单个fiber当做一个虚拟的堆栈结构(virtual stack frame)。</p>
+<p>重构堆栈的好处是你能保存堆栈结构在内存里，然后用你想要的方式和时机去执行它。这点对于实现我们要的调度功能非常
+重要。</p>
+<p>除了调度，手动操作堆栈结构也使的一些潜在特性变得可能，比如并发和错误边界。我们将会在未来的章节讨论这些话题。
+下一节，我们将讨论更多关于fiber的结构。</p>
+<h3><a class="anchor" aria-hidden="true" id="一个fiber的结构"></a><a href="#一个fiber的结构" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>一个fiber的结构</h3>
+<p>注意：随着我们讨论更多的实现细节，某些东西被改变的概率也会上升。如果你发现了任何错误或过时的信息，请帮忙提交一下PR。
+具体来说，一个fiber是包含了一个组件及其输入、输出信息的JavaScript对象。
+一个fiber对应了一个堆栈结构，同时它也对应了一个组件实例。
+下面是fiber的一些重要字段。（这个列表不是完全的）</p>
+<h4><a class="anchor" aria-hidden="true" id="type和key"></a><a href="#type和key" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>type和key</h4>
+<p>fiber的type和key的作用和React元素一样。（实际上，一个fiber从组件创建时，这两个字段会直接复制过来）
+fiber的type描述了它对应的组件。对于复合组件，type就是复合函数或组件的class。对于宿主组件（div, span等），type是一个字符串。
+从概念上来说，type是执行会被堆栈结构跟踪的函数（即在v = f(d)里面的）。
+除了type之外，key是在协调算法中用来决定fiber是否可以重用的字段。</p>
+<h4><a class="anchor" aria-hidden="true" id="child和sibling"></a><a href="#child和sibling" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>child和sibling</h4>
+<p>这些字段指向其他的fiber，描述的是fiber的递归树结构。
+子fiber(child fiber)指的是组件的render方法返回来的值。比如在下面的样例中Parent的子fiber就是Child。</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Child</span> /&gt;</span>
+}
+</span></code></pre>
+<p>兄弟fiber(sibling fiber)指代的是render方法返回多个子节点的情况（Fiber中的新特性！）：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> [<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Child1</span> /&gt;</span>, <span class="hljs-tag">&lt;<span class="hljs-name">Child2</span> /&gt;</span>]
+}
+</span></code></pre>
+<p>兄弟fiber形成一个单链表，链表头就是第一个子节点。在上面的例子中，Parent的子节点是Child1，Child1的兄弟节点是Child2。
+回顾我们前面的函数类比，你可以把子fiber当做是一个尾调用函数。</p>
+<h4><a class="anchor" aria-hidden="true" id="return"></a><a href="#return" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>return</h4>
+<p>返回fiber(return fiber)是指程序处理完当前的fiber后应当处理的下一个fiber。理论上和一个堆栈结构的返回地址一样。也可以认为是父fiber。
+如果一个fiber有多个子fiber，每个子fiber的返回fiber都是它的父fiber。所以在我们上一个例子中，Child1和Child2的返回fiber都是Parent。</p>
+<h4><a class="anchor" aria-hidden="true" id="pendingprops和memoizedprops"></a><a href="#pendingprops和memoizedprops" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>pendingProps和memoizedProps</h4>
+<p>概念上来说，props就是一个函数的参数。一个fiber的pendingProps会在它开始执行处设置，memoizedProps则会在执行结尾处设置。当到来的pendingProps和上一个memoizedProps相等时，它意味着fiber的上一次输出可以重用，避免不必要的事务。</p>
+<h4><a class="anchor" aria-hidden="true" id="pendingworkpriority"></a><a href="#pendingworkpriority" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>pendingWorkPriority</h4>
+<p>指示fiber代表的事务优先级的一个数字。React优先级模块列举了不同的优先级和它们代表的意义。
+除了用0表示NoWork之外，越大的数字代表了越低的优先级。例如，你可以用下面的函数来检查一个fiber的优先级是不是不低于给定的等级：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">matchesPriority</span>(<span class="hljs-params">fiber, priority</span>) </span>{
+  <span class="hljs-keyword">return</span> fiber.pendingWorkPriority !== <span class="hljs-number">0</span> &amp;&amp;
+         fiber.pendingWorkPriority &lt;= priority
+}
+</code></pre>
+<p>这个函数仅仅是作说明用，它实际上不属于React Fiber代码库。
+调度器使用这个优先级字段来搜索下一个要执行的事务。搜索算法会在将来的章节讨论。</p>
+<h3><a class="anchor" aria-hidden="true" id="alternate"></a><a href="#alternate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>alternate</h3>
+<h4><a class="anchor" aria-hidden="true" id="flush"></a><a href="#flush" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>flush</h4>
+<p>冲洗一个fiber就是渲染输出结果到屏幕上。</p>
+<h4><a class="anchor" aria-hidden="true" id="work-in-progress"></a><a href="#work-in-progress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>work-in-progress</h4>
+<p>进行中的fiber代表一个未处理完毕的fiber，概念上来说就是一个还未返回的堆栈结构。</p>
+<p>在任意一个时刻，一个组件实例最多有两个fiber对应着它：当前fiber，冲洗的fiber和进行中的fiber。</p>
+<p>当前fiber的替代(alternate)就是进行中的fiber，进行中的fiber的替代就是当前fiber。</p>
+<p>一个fiber的替代是通过cloneFiber函数懒创建的。cloneFiber会尝试重用fiber的替代（如果存在）来最小化分配空间，而不是总创建新的对象。</p>
+<p>你应当把alternate当做是一个实现细节，但它在代码里面出现了很多次，所以值得在这里讨论。</p>
+<h3><a class="anchor" aria-hidden="true" id="output"></a><a href="#output" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>output</h3>
+<h4><a class="anchor" aria-hidden="true" id="host-component"></a><a href="#host-component" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>host component</h4>
+<p>宿主组件(host component)是React应用的叶节点。它们是跟特定的渲染环境相关的（比如，在浏览器应用中，宿主组件是指div, span等）。在JSX中，它们是用小写字母的tag名称表示的。
+概念上来说，一个fiber的输出结果就是一个函数的返回值。
+每个fiber最终都会有输出结果，但是输出结果是仅由叶节点的宿主组件创建的。然后输出结果会向上转移到整个树。
+输出结果就是最终交给渲染器的东西，然后渲染器能够将更改冲洗到渲染环境。定义输出结果怎么样创建和更新就是渲染器的职责了。</p>
+<h2><a class="anchor" aria-hidden="true" id="未来的部分"></a><a href="#未来的部分" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>未来的部分</h2>
+<p>上面就是至今为止的内容了，但是这个文档还远未接近完成。未来的内容将会描述贯穿整个生命周期和更新使用的算法。将覆盖的主题包括：</p>
+<ul>
+<li>调度器怎么样找到下一个要执行的事务单元</li>
+<li>整个fiber树的优先级怎么跟踪和传播</li>
+<li>调度器怎么样知道什么时候暂停和继续事务</li>
+<li>事务是怎么冲洗和标记为完成的</li>
+<li>附带后果（比如声明周期方法）是怎么样工作的</li>
+<li>什么是协同程序，和它是怎么样用来实现一些特性比如上下文(context)和布局(layout)的</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="相关视频"></a><a href="#相关视频" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>相关视频</h2>
+<p><a href="https://youtu.be/aV1271hd9ew">What's Next for React (ReactNext 2016)</a></p>
+<h3><a class="anchor" aria-hidden="true" id="国内相关讨论"></a><a href="#国内相关讨论" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>国内相关讨论：</h3>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/26027085">https://zhuanlan.zhihu.com/p/26027085</a></li>
+<li><a href="https://www.zhihu.com/question/49496872">https://www.zhihu.com/question/49496872</a></li>
+</ul>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#介绍">介绍</a></li><li><a href="#关于本文档">关于本文档</a></li><li><a href="#需要的知识">需要的知识</a></li><li><a href="#回顾">回顾</a><ul class="toc-headings"><li><a href="#什么是协调算法-what-is-reconciliation">什么是协调算法 （What is reconciliation）</a></li><li><a href="#协调算法-vs-渲染">协调算法 vs 渲染</a></li><li><a href="#调度scheduling">调度(Scheduling)</a></li></ul></li><li><a href="#什么是fiber">什么是Fiber？</a><ul class="toc-headings"><li><a href="#一个fiber的结构">一个fiber的结构</a></li><li><a href="#alternate">alternate</a></li><li><a href="#output">output</a></li></ul></li><li><a href="#未来的部分">未来的部分</a></li><li><a href="#相关视频">相关视频</a><ul class="toc-headings"><li><a href="#国内相关讨论">国内相关讨论：</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 Go7hic</section></footer></div></body></html>
