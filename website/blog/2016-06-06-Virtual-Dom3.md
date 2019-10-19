@@ -9,7 +9,7 @@ tags: React
 前一篇文章介绍了 Virtual Dom 的属性设置等，现在再讲一下  Virtual Dom 怎么绑定事件。
 平常我们给 DOM 绑定事件的写法可能是这样：`querySelector('xx').addEventListener(..)`
 但是在 React 里面我们不这样写，我们直接在 DOM 上通过属性来绑定：
-
+<!--truncate-->
 ```
 <button onClick={() => alert(‘hi!’)}></button>
 ```

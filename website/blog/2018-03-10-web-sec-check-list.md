@@ -7,7 +7,7 @@ authorURL: http://github.com/go7hic
 ### 数据库
 
 - 对识别用户身份的数据和诸如访问令牌、电子邮箱地址或账单明细等敏感数据进行加密。
-- 如果数据库支持在空闲状态进行低消耗的数据加密 (如 [AWS Aurora](https://aws.amazon.com/about-aws/whats-new/2015/12/amazon-aurora-now-supports-encryption-at-rest/))，那么请激活此功能以加强磁盘数据安全。确保所有的备份文件也都被加密存储。
+- 如果数据库支持在空闲状态进行低消耗的数据加密 (如 [AWS Aurora](https://aws.amazon.com/about-aws/whats-new/2015/12/amazon-aurora-now-supports-encryption-at-rest/))，那么请激活此功能以加强磁盘数据安全。确保所有的备份文件也都被加密存储。<!--truncate-->
 - 对访问数据库的用户帐号使用最小权限原则，禁止使用数据库 root 帐号。
 - 使用精心设计的密钥库存储和分发密钥，不要对应用中使用的密钥进行硬编码。
 - 仅使用 SQL 预备语句以彻底阻止 SQL 注入。例如，如果使用 NPM 开发应用，连接数据库时不使用 npm-mysql ，而是使用支持预备语句的 npm-mysql2 。

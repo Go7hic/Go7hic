@@ -9,7 +9,7 @@ authorURL: http://github.com/go7hic
 注：本文来自 https://github.com/thejameskyle/the-super-tiny-compiler 
 
 > 这是一个超级简单的编译器的例子，包含了现代编译器的几个主要部分，用简单易读的 JavaScript 编写。
-
+<!--truncate-->
 把这个读完将会有助于你了解大多数编译器从前端到后端是如何工作的。
 
 

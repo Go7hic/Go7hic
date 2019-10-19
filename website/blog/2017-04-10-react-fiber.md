@@ -5,7 +5,7 @@ author: Go7hic
 authorURL: http://github.com/go7hic
 ---
 React v16 即将发布了，这个版本带来最大的变化就是核心 diff 算法的重写，在新版发布之前，我们一起来了解一下这个被叫做 fiber 的算法到底是啥。
-
+<!--truncate-->
 原文地址：https://github.com/acdlite/react-fiber-architecture
 
 ## 介绍

@@ -55,7 +55,8 @@
               }
             });
         </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/09/17/ios-dev-3">写给前端的 iOS 开发教程(3)：iOS 与 ReactNative 混合开发</a></h1><p class="post-meta">September 17, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>ReactNative 是啥我就不具体介绍了，作为前端你没用过也该听说过。从上半年开始一直断断续续写 RN，遇到 RN 和原生混合开发场景，当然 RN 理论上来说也可以理解为原生应用，只不过中间多了一层 JS 的编译，但是我这里的原生指的是 Objective-C 的原生 iOS 开发。</p>
-<p>作为前端来讲从 RN 来学习 iOS 开发我觉得再合适不过了，下面就是一个 RN 结合原生的开发例子。</p>
+<!--truncate-->
+作为前端来讲从 RN 来学习 iOS 开发我觉得再合适不过了，下面就是一个 RN 结合原生的开发例子。
 <p>假设你已经有了一个原生应用，然后通过 <code>react-native init</code> 开始一个新的 RN 项目工程，把你的原生应用的代码全部放到 RN 项目的 ios 目录里面去。理论上来讲你的原生项目应该用了CocoaPods 来管理一些库，这样你可以在 pod 里面把 RN 的一些原生依赖模块加进去,比如：</p>
 <pre><code class="hljs">target <span class="hljs-string">'项目名字'</span> <span class="hljs-keyword">do</span>
     pod <span class="hljs-string">'React'</span>, <span class="hljs-symbol">:path</span> =&gt; <span class="hljs-string">'../node_modules/react-native'</span>, <span class="hljs-symbol">:subspecs</span> =&gt; [

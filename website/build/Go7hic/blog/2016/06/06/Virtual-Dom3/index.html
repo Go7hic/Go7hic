@@ -57,8 +57,10 @@
         </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/06/06/Virtual-Dom3">动手写一个简单的 Virtual Dom（3）</a></h1><p class="post-meta">June 6, 2016</p><div class="authorBlock"></div></header><div><span><p>前一篇文章介绍了 Virtual Dom 的属性设置等，现在再讲一下  Virtual Dom 怎么绑定事件。
 平常我们给 DOM 绑定事件的写法可能是这样：<code>querySelector('xx').addEventListener(..)</code>
 但是在 React 里面我们不这样写，我们直接在 DOM 上通过属性来绑定：</p>
-<pre><code class="hljs"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> alert(‘hi!’)}&gt;<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
-</code></pre>
+<!--truncate-->
+```
+<button onClick={() => alert(‘hi!’)}></button>
+```
 <p>上面我们有一个专门监听事件的属性，并且都以 'on' 开头，下面我们写一个函数来判断该属性是不是绑定事件的：</p>
 <pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isEventProp</span>(<span class="hljs-params">name</span>) </span>{
   <span class="hljs-keyword">return</span> <span class="hljs-regexp">/^on/</span>.test(name);
