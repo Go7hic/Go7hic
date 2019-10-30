@@ -14,10 +14,12 @@
         </image>
         <copyright>Copyright © 2019 Go7hic</copyright>
         <item>
+            <title><![CDATA[Electron + Puppeteer + 百度离线宝实现一个电话轰炸器]]></title>
             <link>https://yongyuan.us/blog/2019/10/20/bomb.html</link>
             <guid>https://yongyuan.us/blog/2019/10/20/bomb.html</guid>
             <pubDate>Sun, 20 Oct 2019 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>短信轰炸和电话轰炸相信大家都不陌生，可能你没遇到过，但是有些人经历过这些困扰。自从我发现<a href="https://lxb.baidu.com/lxb/index.html?fromu=http%3A%2F%2Flxbjs.baidu.com%2F">百度离线宝</a>这玩意之后，我脑子里有了大胆的想法...</p> <p>先来看下这离线宝是啥，按照百度的定义是：国内领先的提升电话效果的营销应用平台。里面有个网页回呼的功能，所谓网页回呼就是网民输入电话号码，回呼系统立即向“网民”和“企业” 拨打电话，双方接起即可沟通！通话对网民免费，更吸引拨打！</p> <p>就是很多企业网站为了方便和客户沟通会开通这功能，开通这功能的网站一般都有一个浮动的窗口在网页里，类似下面这样： <img src="https://i.loli.net/2019/10/28/CGpQ2V4ul5h1ar9.png" alt="QQ20191028-231827@2x.png"></p> <p>首先这功能是实时的...</p>]]></description>
+            <description><![CDATA[<p>短信轰炸和电话轰炸相信大家都不陌生，可能你没遇到过，但是有些人经历过这些困扰。自从我发现<a href="https://lxb.baidu.com/lxb/index.html?fromu=http%3A%2F%2Flxbjs.baidu.com%2F">百度离线宝</a>这玩意之后，我脑子里有了大胆的想法...</p>
+]]></description>
         </item>
         <item>
             <title><![CDATA[Web Developer Security Checklist【译】]]></title>
