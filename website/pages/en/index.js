@@ -116,8 +116,7 @@ class Index extends React.Component {
       className="productShowcaseSection paddingBottom"
       style={{textAlign: 'center'}}>
       <div class="wrapper">
-        <h2>Contacts</h2>
-        <div>I am currently living in Hangzhou China</div><div>You can reach me by</div>
+        <h2>Contact</h2>
         <ul>
           <li>Email: gtfx0209#gmail.com</li>
           <li>Twitter: @Go7hic</li>
@@ -146,7 +145,7 @@ class Index extends React.Component {
         {[
           {
             content:
-              "My name is DengYongYuan. I use @Go7hic on the web and sometimes use @哥特复兴 in Chinese. I'm a programmer and good at web develop. Currently I'm working for a startup company in Hangzhou. You can check out my <a href='/docs/technology'>technology stack</a> and read my <a href='/blog'>blog</a>",
+              "My name is DengYongYuan. I use @Go7hic on the web and sometimes use @哥特复兴 in Chinese. I'm a programmer and good at fuck full stack. Currently I'm working for a startup company in Hangzhou. ",
             // image: `${baseUrl}img/undraw_note_list.svg`,
             // imageAlign: 'left',
             title: 'About',

@@ -1,5 +1,22 @@
 /* your custom css */
-
+/* :root {
+  --sys-sans: -apple-system,BlinkMacSystemFont,"Helvetica Neue";
+  --en-sans: "Helvetica Neue","Helvetica",Aria;
+  --en-serif: "Droid Serif","Times New Roman";
+  --cjk-sans: "PingFang SC","Hiragino Sans GB","Droid Sans Fallback","Microsoft YaHei";
+  --cjk-serif: "Source Han Serif TW","Source Han Serif CN","Source Han Serif JP";
+  --color-gray: #9ea0a6;
+}
+*/
+body {
+  hyphens: auto;
+  font-family: 'Helvetica Neue',-apple-system,BlinkMacSystemFont,Helvetica,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Microsoft Yahei',sans-serif;
+  font-feature-settings: 'liga' 1,'dlig' 1,'lnum' 1,'ordn' 1,'halt' 1,'kern' 1,'kern','mgrk';
+  font-kerning: auto;
+  font-variant: normal;
+  font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+}
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
 }
 
@@ -28,8 +45,14 @@
 .blockContent div p {
   text-align: left;
 }
-.paddingBottom a {
-  color: #3b74ff;
+a {
+  color: rgba(0,0,0,.98);
+  word-wrap: break-word;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,0,0,.26);
+}
+.postHeaderTitle a, .authorBlock a, a:not([href]) {
+  border-bottom: 0;
 }
 .mainContainer {
   padding: 0;
@@ -73,4 +96,19 @@
 }
 .wei-pay a:hover + img {
   display: inline-block;
+}
+.read-more, .authorBlock {
+  display: none!important;
+}
+.posts .postHeaderTitle {
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.post-content, .blogContainer .postHeader p.post-meta {
+  opacity: 0.5;
+}
+ul {
+  padding-left: 1em;
 }
