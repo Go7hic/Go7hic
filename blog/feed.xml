@@ -4,7 +4,7 @@
         <title>Go7hic Blog</title>
         <link>https://yongyuan.us/blog</link>
         <description>The best place to stay up-to-date with the latest Go7hic news and events.</description>
-        <lastBuildDate>Sun, 20 Oct 2019 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 20 Nov 2019 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -13,6 +13,13 @@
             <link>https://yongyuan.us/blog</link>
         </image>
         <copyright>Copyright © 2019 Go7hic</copyright>
+        <item>
+            <title><![CDATA[扯谈之 React 和 LLVM]]></title>
+            <link>https://yongyuan.us/blog/2019/11/20/react-llvm.html</link>
+            <guid>https://yongyuan.us/blog/2019/11/20/react-llvm.html</guid>
+            <pubDate>Wed, 20 Nov 2019 06:00:00 GMT</pubDate>
+            <description><![CDATA[<blockquote> <p>这是一篇很久之前的瞎想的文章，最近修改一下拿出来给博客除除草</p> </blockquote> <p>取这个标题并不是为了要写两者之间有啥关联，因为两者之前确实没啥联系可写，根本不是一个层级的东西。我这主要还是自己之前接触学习 LLVM 时的一些想法记录下来</p> <h4><a class="anchor" aria-hidden="true" id="llvm"></a><a href="#llvm" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>LLVM</h4> <p>先看下维基百科对LLVM 的介绍：</p> <blockquote> <p>LLVM是一个自由软件项目，它是一种编译器基础设施，以C++写成，包含一系列模块化的编译器组件和工具链，用来开发编译器前端和后端。它是为了任意一种编程语言而写成的程序，利用虚拟技术创造出编译时期、链接时期、运行时期以及“闲置时期...</p></blockquote>]]></description>
+        </item>
         <item>
             <title><![CDATA[Electron + Puppeteer + 百度离线宝实现一个电话轰炸器]]></title>
             <link>https://yongyuan.us/blog/2019/10/20/bomb.html</link>
