@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://yongyuan.us/blog</id>
     <title>Go7hic Blog</title>
-    <updated>2019-11-20T06:00:00Z</updated>
+    <updated>2020-06-01T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://yongyuan.us/blog"/>
     <subtitle>The best place to stay up-to-date with the latest Go7hic news and events.</subtitle>
     <logo>https://yongyuan.us/img/tx.jpeg</logo>
-    <rights>Copyright © 2019 Go7hic</rights>
+    <rights>Copyright © 2020 Go7hic</rights>
+    <entry>
+        <title type="html"><![CDATA[笔记类工具迁移记录]]></title>
+        <id>https://yongyuan.us/blog/2020/06/01/notion.html</id>
+        <link href="https://yongyuan.us/blog/2020/06/01/notion.html">
+        </link>
+        <updated>2020-06-01T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<blockquote> <p>除草</p> </blockquote> <p>我用过很多笔记、效率类的软件，基本上火一点软件的我都有尝试过。但是这么多年下来，用的最久的还是印象笔记和Trello。</p> <p>印象笔记主要是记录一些笔记，备份一些博客文章，公众号文啥的，还有一个他的剪藏功能用的也比较多，当作我的稍后阅读功能来用，我还买了印象笔记的高级版。</p> <p>Trello 主要是当看板用，记录和规划一些事情。其实就一个看板，我把这个看板叫做生产效率体系。</p> <p>前面说了我尝试过很多软件，其中有一个 Notion 给我一直留有印象，我17年就尝试了这个软件，但是当时用过觉得有点复杂，虽...</p>]]></summary>
+        <author>
+            <name>Go7hic</name>
+            <uri>http://github.com/go7hic</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[扯谈之 React 和 LLVM]]></title>
         <id>https://yongyuan.us/blog/2019/11/20/react-llvm.html</id>
