@@ -102,7 +102,7 @@ class Index extends React.Component {
           <li><a target="_blank" href="https://github.com/R-Components">R-Components</a>: some react components</li>
           <li><a target="_blank" href="https://github.com/RN-Components">RN-Components</a>: some react-native components</li>
           <li><a target="_blank" href="https://github.com/Go7hic/bomb">bomb</a>: 电话轰炸器桌面客户端</li>
-          <li><a target="_blank" href="https://github.com/Go7hic/xupload">xupload</a>: 阿里云CDN上传桌面客户端</li>
+          
          
         </ul>
         <div>More on my <a target="_blank" href="https://github.com/Go7hic">Github</a></div>

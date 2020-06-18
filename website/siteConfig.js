@@ -39,7 +39,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {blog: true, label: 'Blog', target: '_blank'},
-    {doc: 'technology/doc1', label: 'Docs'},  
+    // {doc: 'https://www.notion.so/828cfb3ad0d048a89c363d3397ba2941', label: 'Docs'},  
   ],
 
   // If you have users set above, you add it here:
