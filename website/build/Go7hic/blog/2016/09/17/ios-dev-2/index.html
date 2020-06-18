@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>写给前端的 iOS 开发教程(2)：熟悉 CocoaPods · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="CocoaPods 我的理解就是和 Node 的 npm 作用差不多，用来管理一些配置依赖文件，不过它是从 Ruby 的 RubyGems,Bundler 受启发来的。如果你要用 OC 开发，肯定要学会使用 pod 的，就像你用 Node，肯定要用 npm 一样的。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="写给前端的 iOS 开发教程(2)：熟悉 CocoaPods · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2016/09/17/ios-dev-2"/><meta property="og:description" content="CocoaPods 我的理解就是和 Node 的 npm 作用差不多，用来管理一些配置依赖文件，不过它是从 Ruby 的 RubyGems,Bundler 受启发来的。如果你要用 OC 开发，肯定要学会使用 pod 的，就像你用 Node，肯定要用 npm 一样的。"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2020/06/01/notion">笔记类工具迁移记录</a></li><li class="navListItem"><a class="navItem" href="/blog/2019/11/20/react-llvm">扯谈之 React 和 LLVM</a></li><li class="navListItem"><a class="navItem" href="/blog/2019/10/20/bomb">Electron + Puppeteer + 百度离线宝实现一个电话轰炸器</a></li><li class="navListItem"><a class="navItem" href="/blog/2018/03/10/web-sec-check-list">Web Developer Security Checklist【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2017/10/08/js-compiler">用 JavaScript 写一个简单的编译器【译】</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/09/17/ios-dev-2">写给前端的 iOS 开发教程(2)：熟悉 CocoaPods</a></h1><p class="post-meta">September 17, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>CocoaPods 我的理解就是和 Node 的 npm 作用差不多，用来管理一些配置依赖文件，不过它是从 Ruby 的 RubyGems,Bundler 受启发来的。如果你要用 OC 开发，肯定要学会使用 pod 的，就像你用 Node，肯定要用 npm 一样的。</p>
+<!--truncate-->
+网上也有很多 pod 的使用教程，这里也把之前的笔记简单记录一下
+<h2><a class="anchor" aria-hidden="true" id="使用cocoapods"></a><a href="#使用cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>使用CocoaPods</h2>
+<p>制作和使用CocoaPods库都十分简单，往往几分钟就能配置完毕。</p>
+<p>想获取最新的官方教程，<a href="http://guides.cocoapods.org/">请前往此处</a>。</p>
+<h4><a class="anchor" aria-hidden="true" id="安装cocoapods"></a><a href="#安装cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>安装CocoaPods</h4>
+<p>CocoaPods可以方便地通过RubyGems安装，打开Terminal，然后键入以下命令：</p>
+<pre><code class="hljs">$ sudo gem <span class="hljs-keyword">install</span> cocoapods
+</code></pre>
+<p>就这么简单，现在你应该可以开始使用pod命令了。</p>
+<blockquote>
+<p>如果你使用Ruby版本管理器，如rbenv，你可能需要运行以下指令来重新链接shim的二进制文件（例如：$ rbenv rehash）。</p>
+</blockquote>
+<h4><a class="anchor" aria-hidden="true" id="管理相关性"></a><a href="#管理相关性" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>管理相关性</h4>
+<p>一个相关性管理器可以将一系列的软件需求转化为具体的标签，然后下载并且整合进入相关的项目。</p>
+<p>申明需求可以自动化整个项目配置，这也是软件开发的最佳实践之一，无论是在任何语言中。甚至你不使用第三方库，CocoaPods仍然是一个管理代码相关性的绝佳工具。</p>
+<h4><a class="anchor" aria-hidden="true" id="podfile"></a><a href="#podfile" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Podfile</h4>
+<p>Podfile这个文件是用来用来申明项目代码相关性的，正如Bundler的Gemfile，或者npm的package.json</p>
+<p>cd进入.xcodeproj文件所在的目录，通过以下命令来创建一个Podfile</p>
+<pre><code class="hljs"><span class="hljs-variable">$ </span>pod init
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" id="podfile-1"></a><a href="#podfile-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Podfile</h4>
+<pre><code class="hljs">platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'7.0'</span>
+
+target <span class="hljs-string">"AppName"</span> <span class="hljs-keyword">do</span>
+
+<span class="hljs-keyword">end</span>
+</code></pre>
+<p>你可以申明需要不同版本的库，大部分情况下，申明到minor或者patch版本就足够了</p>
+<pre><code class="hljs"><span class="hljs-attribute">pod</span> <span class="hljs-string">'X'</span>, <span class="hljs-string">'~&gt; 1.1'</span>
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" id="cocoapods遵循语意化版本规范"></a><a href="#cocoapods遵循语意化版本规范" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CocoaPods遵循语意化版本规范。</h4>
+<p>对于那些不在CocoaPods公共Git仓库中的库，你可以用任何一个Git, Mercurial或者SVN仓库取代，并且还可以指定具体的commit, branch或者tag。</p>
+<pre><code class="hljs">pod <span class="hljs-string">'Y'</span>, :<span class="hljs-function"><span class="hljs-params">git</span> =&gt;</span> <span class="hljs-string">'https://github.com/NSHipster/Y.git'</span>, :<span class="hljs-function"><span class="hljs-params">commit</span> =&gt;</span> <span class="hljs-string">'b4dc0ffee'</span>
+</code></pre>
+<p>一旦所有的相关性都申明完毕，你可以使用以下指令来安装所需要的库：</p>
+<pre><code class="hljs">$ pod <span class="hljs-keyword">install</span>
+</code></pre>
+<p>安装过程中，CocoPods会使用递归来分析所有的需求，并且建立一个代码相关性的图，最后将Podfile序列化为Podfile.lock</p>
+<p>比如，如果两个库都需要使用AFNetworking，CocoaPods会确定一个同时能被这两库使用的版本，然后将同一个安装版本链接到两个不同的库中。</p>
+<p>CocoaPods会创建一个新的包含之前安装好的静态库Xcode项目，然后将它们链接成一个新的libPods.a target。你原有的项目将会依赖这个新的静态库。一个xcworkspace文件会被创建，从此之后，你应该只打开这个xcworkspace文件来进行开发。</p>
+<p>反复使用pod install命令，只会让CocoaPods重复以上步骤，重新安装这些库。所以，当你需要升级它们时，请使用以下命令：</p>
+<p>Bash
+$ pod update
+试着使用CocoaPod</p>
+<p>try是一个及其实用但又鲜为人知的CocoaPods命令，通过它你能够在安装一个库之前，先试用一下。</p>
+<p>你只需要在try后面加上任意一个CocoaPods公共库的名称，就能试用它了！</p>
+<p>Bash
+$ pod try Ono
+建立自己的CocoaPod</p>
+<p>作为Objective-C软件分发实际上的标准，CocoaPods几乎是所有开源项目的标配，如果你想让你的项目被大家很方便地使用。</p>
+<p>诚然，这会提高一点点你分享项目的门槛，但是，好处是显然易见的。你花几分钟创建一个.podspec文件可以节省下其他开发者无数的时间。</p>
+<p>规范</p>
+<p>.podspec文件作为CocoaPods的一个独立单元，包含了名称，版本，许可证，和源码文件等所有信息。</p>
+<p>官方指南中有许多信息和范例</p>
+<p>以下是NSHipsterKit.podspec</p>
+<pre><code class="hljs">Pod::Spec.new <span class="hljs-keyword">do</span> <span class="hljs-params">|s|</span>
+  s.name     = <span class="hljs-string">'NSHipsterKit'</span>
+  s.version  = <span class="hljs-string">'1.0.0'</span>
+  s.license  = <span class="hljs-string">'MIT'</span>
+  s.summary  = <span class="hljs-string">"A pretty obscure library.
+                You've probably never heard of it."</span>
+  s.homepage = <span class="hljs-string">'http://nshipster.com'</span>
+  s.authors  = { <span class="hljs-string">'Mattt Thompson'</span> =&gt;
+                 <span class="hljs-string">'mattt@nshipster.com'</span> }
+  s.social_media_url = <span class="hljs-string">"https://twitter.com/mattt"</span>
+  s.source   = { <span class="hljs-symbol">:git</span> =&gt; <span class="hljs-string">'https://github.com/nshipster/NSHipsterKit.git'</span>, <span class="hljs-symbol">:tag</span> =&gt; <span class="hljs-string">'1.0.0'</span> }
+  s.source_files = <span class="hljs-string">'NSHipsterKit'</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
+<p>一旦把这个.podspec发布到公共数据库中，任何想使用它的开发者，只需要在Podfile中加入如下声明即可：</p>
+<h4><a class="anchor" aria-hidden="true" id="podfile-2"></a><a href="#podfile-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Podfile</h4>
+<pre><code class="hljs"><span class="hljs-attribute">pod</span> <span class="hljs-string">'NSHipsterKit'</span>, <span class="hljs-string">'~&gt; 1.0'</span>
+.podspec文件也可以作为管理内部代码的利器：
+</code></pre>
+<pre><code class="hljs">pod <span class="hljs-string">'Z'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'path/to/directory/with/podspec'</span>
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" id="发布cocoapod"></a><a href="#发布cocoapod" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>发布CocoaPod</h4>
+<p>CocoaPods 0.33中加入了Trunk服务。</p>
+<p>虽然一开始使用GitHub Pull Requests来整理所有公共pods效果很好。但是，随着Pod数量的增加，这个工作对于spec维护人员Keith Smiley来说变得十分繁杂。甚至一些没有通过$ pod lint的spec也被提交上来，造成repo无法build。</p>
+<p>CocoaPods Trunk服务的引入，解决了很多类似的问题。CocoaPods作为一个集中式的服务，使得分析和统计平台数据变得十分方便。</p>
+<p>要想使用Trunk服务，首先你需要注册自己的电脑。这很简单，只要你指明你的邮箱地址（spec文件中的）和名称即可。</p>
+<pre><code class="hljs"><span class="hljs-variable">$ </span>pod trunk register mattt<span class="hljs-variable">@nshipster</span>.com <span class="hljs-string">"Mattt Thompson"</span>
+</code></pre>
+<p>至此，你就可以通过以下命令来方便地发布和升级你的Pod！</p>
+<pre><code class="hljs">$ pod trunk push <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">NAME</span>.</span></span>podspec
+</code></pre>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#使用cocoapods">使用CocoaPods</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2020 Go7hic</section></footer></div></body></html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>动手写一个简单的 Virtual Dom（2） · Go7hic</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="上一篇文章其实就是介绍了怎么创建虚拟 DOM，真的只是创建 DOM 元素而已，因为没有设置属性的功能，事件绑定的功能也没有。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="动手写一个简单的 Virtual Dom（2） · Go7hic"/><meta property="og:type" content="website"/><meta property="og:url" content="https://yongyuan.us/blog/2016/06/06/Virtual-Dom2"/><meta property="og:description" content="上一篇文章其实就是介绍了怎么创建虚拟 DOM，真的只是创建 DOM 元素而已，因为没有设置属性的功能，事件绑定的功能也没有。"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/tx.jpeg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://yongyuan.us/blog/atom.xml" title="Go7hic Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://yongyuan.us/blog/feed.xml" title="Go7hic Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/tx.jpeg" alt="Go7hic"/><h2 class="headerTitleWithLogo">Go7hic</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/blog/2020/06/01/notion">笔记类工具迁移记录</a></li><li class="navListItem"><a class="navItem" href="/blog/2019/11/20/react-llvm">扯谈之 React 和 LLVM</a></li><li class="navListItem"><a class="navItem" href="/blog/2019/10/20/bomb">Electron + Puppeteer + 百度离线宝实现一个电话轰炸器</a></li><li class="navListItem"><a class="navItem" href="/blog/2018/03/10/web-sec-check-list">Web Developer Security Checklist【译】</a></li><li class="navListItem"><a class="navItem" href="/blog/2017/10/08/js-compiler">用 JavaScript 写一个简单的编译器【译】</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/blog/2016/06/06/Virtual-Dom2">动手写一个简单的 Virtual Dom（2）</a></h1><p class="post-meta">June 6, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="http://github.com/go7hic" target="_blank" rel="noreferrer noopener">Go7hic</a></p></div></header><div><span><p>上一篇文章其实就是介绍了怎么创建虚拟 DOM，真的只是创建 DOM 元素而已，因为没有设置属性的功能，事件绑定的功能也没有。
+现在慢慢的一个个来实现吧。</p>
+<!--truncate-->
+## 设置属性
+<p>设置属性很简单的，还记得前面我们怎么表达 DOM 的吗? 我们把属性用纯 JS 对象存起来，比如：</p>
+<pre><code class="hljs css language-html"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">className</span>=<span class="hljs-string">”list”</span> <span class="hljs-attr">style</span>=<span class="hljs-string">”list-style:</span> <span class="hljs-attr">none</span>;”&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</code></pre>
+<p>用 JS 对象来表达这个 DOM，就会是下面这个样子：</p>
+<pre><code class="hljs css language-js">{ 
+  <span class="hljs-attr">type</span>: ‘ul’, 
+  <span class="hljs-attr">props</span>: { <span class="hljs-attr">className</span>: ‘list’, <span class="hljs-attr">style</span>: ’list-style: none;’ } 
+  children: []
+}
+</code></pre>
+<p>上面对象的每个字段就是属性名称，字段的值就是属性的值了。我们只要把这个对象映射到 DOM节点上去就可以啦。
+可以利用 <code>setAttribute()</code> 方法来写一个设置属性的函数：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setProp</span>(<span class="hljs-params">$target, name, value</span>) </span>{
+  $target.setAttribute(name, value);
+}
+</code></pre>
+<p>我们既然知道在 JS 里设置一个属性，那么可以通过遍历把对象里的每个字段设置成属性：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setProps</span>(<span class="hljs-params">$target, props</span>) </span>{
+  <span class="hljs-built_in">Object</span>.keys(props).forEach(<span class="hljs-function"><span class="hljs-params">name</span> =&gt;</span> {
+    setProp($target, name, props[name]);
+  });
+}
+</code></pre>
+<p>接下来我们要用到上篇文章提到的 <code>createElement()</code> 函数。在创建 DOM 后引用 <code>setProps()</code> 函数</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createElement</span>(<span class="hljs-params">node</span>) </span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> node === ‘string’) {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">document</span>.createTextNode(node)
+  }
+  <span class="hljs-keyword">const</span> $el = <span class="hljs-built_in">document</span>.createElement(node.type)
+  setProps($el, node.props)
+  node.children
+    .map(createElement)
+    .forEach($el.appendChild.bind($el))
+  <span class="hljs-keyword">return</span> $el
+}
+</code></pre>
+<p>到这里还没完，还有几个需要注意的小地方。首先 class 在 JS 关键字，需要用 'className' 代替：</p>
+<pre><code class="hljs css language-html"><span class="hljs-tag">&lt;<span class="hljs-name">nav</span> <span class="hljs-attr">className</span>=<span class="hljs-string">”navbar</span> <span class="hljs-attr">light</span>”&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+</code></pre>
+<p>但是因为 DOM 里面是没有 <code>className</code> 这个属性的，所以需要我们自己利用 <code>setProp()</code> 函数去设置。</p>
+<p>还有一个注意的地方就是，我们经常在 DOM 里面要用到一些布尔属性，比如：</p>
+<pre><code class="hljs"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">”checkbox”</span> <span class="hljs-attr">checked</span>=<span class="hljs-string">{false}</span> /&gt;</span>
+</code></pre>
+<p>前面写了一个设置元素标签属性的 <code>setProp</code> 函数，现在需要再写一个设置元素标签属性布尔值的函数：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setBooleanProp</span>(<span class="hljs-params">$target, name, value</span>) </span>{
+  <span class="hljs-keyword">if</span> (value) {
+    $target.setAttribute(name, value);
+    $target[name] = <span class="hljs-literal">true</span>;
+  } <span class="hljs-keyword">else</span> {
+    $target[name] = <span class="hljs-literal">false</span>;
+  }
+}
+</code></pre>
+<p>还有一个需要注意的就是我们有的时候可能会自己定义一个属性在 DOM 元素上，像这种情况我们需要检查如果是自定义的不存在的属性，我们
+返回 false：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isCustomProp</span>(<span class="hljs-params">name</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}
+</code></pre>
+<p>现在我们把 <code>setBooleanProp</code>，<code>isCustomProp</code>添加到 <code>setProp</code> 实现一个完整的设置属性的功能函数</p>
+<pre><code class="hljs"><span class="hljs-function"><span class="hljs-keyword">function</span></span> setProp($<span class="hljs-keyword">target</span>, <span class="hljs-keyword">name</span>, <span class="hljs-keyword">value</span>) {
+  <span class="hljs-keyword">if</span> (isCustomProp(<span class="hljs-keyword">name</span>)) {
+    <span class="hljs-keyword">return</span>;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">name</span> === ‘className’) {
+    $<span class="hljs-keyword">target</span>.setAttribute(‘<span class="hljs-keyword">class</span>’, <span class="hljs-keyword">value</span>);
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (typeof <span class="hljs-keyword">value</span> === ‘boolean’) {
+    setBooleanProp($<span class="hljs-keyword">target</span>, <span class="hljs-keyword">name</span>, <span class="hljs-keyword">value</span>)
+  } <span class="hljs-keyword">else</span> {
+    $<span class="hljs-keyword">target</span>.setAttribute(<span class="hljs-keyword">name</span>, <span class="hljs-keyword">value</span>)
+  }
+}
+</code></pre>
+<p>上一篇讲创建 DOM 的时候有写到进行 DOM diff，其实现在这个属性也要进行 props diff。当然 diff
+无非几种情况，删除属性，添加属性，更新属性这几种。</p>
+<p>下面是删除属性的具体的函数：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeBooleanProp</span>(<span class="hljs-params">$target, name</span>) </span>{
+  $target.removeAttribute(name);
+  $target[name] = <span class="hljs-literal">false</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeProp</span>(<span class="hljs-params">$target, name, value</span>) </span>{
+  <span class="hljs-keyword">if</span> (isCustomProp(name)) {
+    <span class="hljs-keyword">return</span>;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (name === ‘className’) {
+    $target.removeAttribute(‘<span class="hljs-class"><span class="hljs-keyword">class</span>’)</span>;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> value === ‘boolean’) {
+    removeBooleanProp($target, name);
+  } <span class="hljs-keyword">else</span> {
+    $target.removeAttribute(name);
+  }
+}
+</code></pre>
+<p>我们还需要一个 updateProp 的函数来比较DOM标签上新旧属性的区别并且更新最后的 DOM。细想一下应该主要就是
+下面几种情况：</p>
+<ul>
+<li>添加属性，指的是本来 DOM 标签上一个属性都没有，添加了一个属性</li>
+<li>把属性删除了，和上面想反</li>
+<li>删除属性值，可能一个属性里面本来有多个值，现在删了一个，比如本来 DOM class 属性有两个值的，现在删了一个</li>
+<li>添加属性值，和上面相反</li>
+</ul>
+<p>对于一个属性的更新可以这么写：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateProp</span>(<span class="hljs-params">$target, name, newVal, oldVal</span>) </span>{
+  <span class="hljs-keyword">if</span> (!newVal) {
+    removeProp($target, name, oldVal);
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!oldVal || newVal !== oldVal) {
+    setProp($target, name, newVal);
+  }
+}
+</code></pre>
+<p>对于所有的属性则可以和前面设置属性一样通过遍历来实现：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateProps</span>(<span class="hljs-params">$target, newProps, oldProps = {}</span>) </span>{
+  <span class="hljs-keyword">const</span> props = <span class="hljs-built_in">Object</span>.assign({}, newProps, oldProps);
+  <span class="hljs-built_in">Object</span>.keys(props).forEach(<span class="hljs-function"><span class="hljs-params">name</span> =&gt;</span> {
+    updateProp($target, name, newProps[name], oldProps[name]);
+  });
+}
+</code></pre>
+<p>好了，属性也更新了，最后就是更新DOM元素了，在第一篇文章里我们写了一个 updateElement函数，现在我们来更新一下这个函数：</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateElement</span>(<span class="hljs-params">$parent, newNode, oldNode, index = <span class="hljs-number">0</span></span>) </span>{
+  <span class="hljs-keyword">if</span> (!oldNode) {
+    $parent.appendChild(
+      createElement(newNode)
+    );
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!newNode) {
+    $parent.removeChild(
+      $parent.childNodes[index]
+    );
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (changed(newNode, oldNode)) {
+    $parent.replaceChild(
+      createElement(newNode),
+      $parent.childNodes[index]
+    );
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (newNode.type) {
+    <span class="hljs-comment">// 新添加的代码</span>
+    updateProps(
+      $parent.childNodes[index],
+      newNode.props,
+      oldNode.props
+    ); <span class="hljs-comment">//</span>
+
+    <span class="hljs-keyword">const</span> newLength = newNode.children.length;
+    <span class="hljs-keyword">const</span> oldLength = oldNode.children.length;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; newLength || i &lt; oldLength; i++) {
+      updateElement(
+        $parent.childNodes[index],
+        newNode.children[i],
+        oldNode.children[i],
+        i
+      );
+    }
+  }
+}
+</code></pre>
+<p>最后我把上面的代码整理一下在 jsfiddle 上： <a href="https://jsfiddle.net/gothic/a1c4qky5/">https://jsfiddle.net/gothic/a1c4qky5/</a></p>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/blog">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#设置属性">设置属性</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2020 Go7hic</section></footer></div></body></html>
