@@ -1,7 +1,12 @@
 ## 👋 Hello! I'm Go7hic.
 
  ![visitors](https://visitor-badge.glitch.me/badge?page_id=Go7hic.Go7hic)
- 
+ <a href="https://twitter.com/Go7hic">
+    <img src="https://img.shields.io/badge/-@Go7hic-1ca0f1?style=flat-square&labelColor=1ca0f1&logo=twitter&logoColor=white&link=https://twitter.com/Go7hic">
+   <a/>
+   <a href="mailto:gtfx0209@gmail.com">
+    <img src="https://img.shields.io/badge/-gtfx0209@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:gtfx0209@gmail.com">
+   <a/>
  <!--
 🔭 I’m currently working
 🌱 I’m currently learning
@@ -11,6 +16,8 @@
 -->
 
 ![My Github Stats](https://github-readme-stats.vercel.app/api?username=Go7hic&show_icons=true)
+
+
 
 ### 📊 Weekly development breakdown
 <!--START_SECTION:waka-->
