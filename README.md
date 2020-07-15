@@ -12,6 +12,7 @@
 
 ![My Github Stats](https://github-readme-stats.vercel.app/api?username=Go7hic&show_icons=true)
 
+### 📊 Weekly development breakdown
 <!--START_SECTION:waka-->
 ```text
 TypeScript  11 hrs 21 mins      ████████████░░░░░░░░░░░░░   48.23 
