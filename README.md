@@ -1,6 +1,6 @@
 ## 👋 Hello! I'm Go7hic.
 
- ![visitors](https://visitor-badge.glitch.me/badge?page_id=Go7hic.Go7hic)
+ ![visitors count](https://visitors-by-url-pls-dont-use-this-in-your-repo.vercel.app/Go7hic-github-readme)
  <a href="https://twitter.com/Go7hic">
     <img src="https://img.shields.io/badge/-@Go7hic-1ca0f1?style=flat-square&labelColor=1ca0f1&logo=twitter&logoColor=white&link=https://twitter.com/Go7hic">
    <a/>
