@@ -16,7 +16,7 @@
 ⚡ Fun fact: 
 -->
 
-![My Github Stats](https://github-readme-stats.vercel.app/api?username=Go7hic&show_icons=true)
+![My Github Stats](https://github-readme-stats.vercel.app/api?username=Go7hic&show_icons=true&count_private=true)
 
 
 
