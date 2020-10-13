@@ -15,10 +15,10 @@
 📫 How to reach me: 
 ⚡ Fun fact: 
 -->
-
+ <!--
 ![My Github Stats](https://github-readme-stats.vercel.app/api?username=Go7hic&show_icons=true&count_private=true)
 
-
+-->
 
 ### 📊 Weekly development breakdown
 <!--START_SECTION:waka-->
