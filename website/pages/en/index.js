@@ -145,7 +145,7 @@ class Index extends React.Component {
         {[
           {
             content:
-              "My name is DengYongYuan. I use @Go7hic on the web and sometimes use @哥特复兴 in Chinese. I'm a programmer and good at fuck full stack. Currently I'm working for a startup company in Hangzhou. ",
+              "My name is DengYongYuan. I use @Go7hic on the web and sometimes use @哥特复兴 in Chinese. I'm a programmer and good at fuck full stack. Currently I'm work in NetEase. ",
             // image: `${baseUrl}img/undraw_note_list.svg`,
             // imageAlign: 'left',
             title: 'About',
