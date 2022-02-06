@@ -23,7 +23,7 @@
 ### 📊 Weekly development breakdown
 <!--START_SECTION:waka-->
 ```text
-JSON        0 secs              █████████████████████████   100.0
+
 ```
 <!--END_SECTION:waka-->
 
