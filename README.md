@@ -32,5 +32,5 @@ Git Config  0 secs              ░░░░░░░░░░░░░░░░
 <!--END_SECTION:waka-->
     
 ### 💻 交流学习
-建了一个免费的星球，有啥问题或者分享可以进去讨论： https://t.zsxq.com/VvJmUvn
+建了一个免费的星球，有啥问题或者分享可以进去一起讨论，我也会在里面写一点东西： https://t.zsxq.com/VvJmUvn
 
