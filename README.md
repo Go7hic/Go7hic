@@ -1,5 +1,5 @@
 ## 👋 Hello! I'm Go7hic.
-![4051670302329_ pic (1)](https://user-images.githubusercontent.com/3821390/205903076-71aad35d-d7e7-4d69-823c-c8339f332a64.jpg)
+<!--![4051670302329_ pic (1)](https://user-images.githubusercontent.com/3821390/205903076-71aad35d-d7e7-4d69-823c-c8339f332a64.jpg) -->
  
  ![visitors count](https://visitors-by-url-pls-dont-use-this-in-your-repo.vercel.app/Go7hic-github-readme)
  <a href="https://twitter.com/Go7hic">
