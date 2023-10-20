@@ -7,7 +7,6 @@
    <a href="mailto:gtfx0209@gmail.com">
     <img src="https://img.shields.io/badge/-gtfx0209@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:gtfx0209@gmail.com">
    <a/>
-    ![Keybase BTC](https://img.shields.io/keybase/btc/Go7hic)
  <!--
 🔭 I’m currently working
 🌱 I’m currently learning
